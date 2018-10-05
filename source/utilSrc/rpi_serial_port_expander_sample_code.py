@@ -19,7 +19,7 @@ def main(stdscr):
     
     #USB parameters
     usbport = '/dev/ttyAMA0'
-    ser = serial.Serial(usbport, 9600, timeout = 0) # sets the serial port to the specified port, with a 9600 baud rate
+    ser = serial.Serial(usbport, 38400, timeout = 0) # sets the serial port to the specified port, with a 9600 baud rate
     # Timeout = 0 tells the serial port to not wait for input if there is non 
     
     # declare and initialize the data buffers
