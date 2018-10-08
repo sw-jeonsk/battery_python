@@ -4,6 +4,7 @@
 from tkinter import *
 from tkinter import ttk
 from tkinter import Canvas
+import constant
 from enum 	 import Enum
 
 import logging
@@ -13,9 +14,10 @@ import socket
 import random
 import tkinter.font
 import tkinter.font
+import RPi.GPIO as GPIO
+import serial
 
 import time
-import constant
 
 ## CONST.............
 
@@ -81,11 +83,12 @@ NAMEFIELD 	= None
 SENTENCE	= None
 NOBATTERY	= None
 NAME		= None
+UART		= None
+BAUDRATE	= 38400
 
-HOST = '127.0.0.1'
-PORT = 1234
-UDP_SOCKET = None
 TIME = 0
+
+USBPORT = '/dev/ttyAMA0'
 
 ########################################################################################
 
@@ -318,6 +321,7 @@ def battery(value):
 	elif value <= 75:
 		canvas.itemconfig(SECOND, image=constant.GREEN[second_value])
 		canvas.itemconfig(FIRST, image=constant.GREEN[first_value])
+
 	elif value <= 100:
 		canvas.itemconfig(SECOND, image=constant.BLUE[second_value])
 		canvas.itemconfig(FIRST, image=constant.BLUE[first_value])
@@ -343,46 +347,27 @@ def hello_after():
 	root.after(1000, hello_after)
 
 
-def udp_server():
+def uart_server():
+	global UART, run
+	UART = serial.Serial(USBPORT, BAUDRATE, timeout = 1)
 
-	global HOST, PORT, UDP_SOCKET, TIME
+	GPIO.setup(18, GPIO.OUT)
+	GPIO.setup(23, GPIO.OUT)
+	GPIO.setup(12, GPIO.IN)
 
-	UDP_SOCKET = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
-	UDP_SOCKET.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
-
-
-	print("Listening on UDP")
-	log.info("Listening on UDP %s:%s" % (HOST, PORT))
-	UDP_SOCKET.bind((HOST, PORT))
-
+	GPIO.output(18, False)
+	GPIO.output(23, False)
 	while run:
-		(data, addr) = UDP_SOCKET.recvfrom(128*1024)
-		print("data : ", data)
-		TIME = 0
-		if data == b'wait':
-			waitView()
-		elif data == b'bad':
-			badView()
-		elif type(int(data)) == int:
-			print(data)
-			battery(int(data))
-		
+		readData = UART.readline()
+
+		if len(readData) != 0:
+			data = readData.decode('ascii')
+			print("GPIO(12) : " + GPIO.input(18))
+			print("data : " + data) #DEBUG
+
+			arrData = data.split(',') # #R/T/01/data
 		else:
-			print(type(data))
-
-
-# def uart_server():
-# 	global UART, run
-#
-# 	while run:
-# 		readData = UART.readline()
-#
-# 		if len(readData) != 0:
-# 			data = readData.decode('ascii')
-# 			print(data) #DEBUG
-# 			arrData = data.split(',') # #R/T/01/data
-# 		else:
-# 			pass
+			pass
 
 def init():
 	
@@ -398,7 +383,7 @@ def init():
 	root.bind("b", battery_state)
 	frame.pack()
 
-	Thread1 = threading.Thread(target=udp_server)
+	Thread1 = threading.Thread(target=uart_server)
 
 
 	Thread1.start()
