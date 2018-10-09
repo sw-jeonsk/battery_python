@@ -58,7 +58,6 @@ Bat_MarkY		=	542 + TMarkSize/2
 BarX		= 406
 BarY 		= 258
 
-
 GreetX		= 406 + 406/2
 GreetY		= 168 + 168/3
 
@@ -87,8 +86,34 @@ UART		= None
 BAUDRATE	= 38400
 
 TIME = 0
-
+UART_TIME = 0.5
 USBPORT = '/dev/ttyAMA0'
+
+##GPIO
+S1= 10
+S2= 9
+S3= 11
+
+S1_flag = 0
+S2_flag = 0
+S3_flag = 0
+#output...
+CHARGE_EN1 = 18
+CHARGE_EN2 = 23
+CHARGE_EN3 = 24
+CHARGE_EN4 = 25
+
+#output...
+DOOR_EN1 = 12
+DOOR_EN2 = 16
+DOOR_EN3 = 20
+DOOR_EN4 = 21
+
+#input...
+SOL_OFF_EN1 = 17
+SOL_OFF_EN2 = 27
+SOL_OFF_EN3 = 22
+SOL_OFF_EN4 = 5
 
 ########################################################################################
 
@@ -123,6 +148,9 @@ POPUP02     = PhotoImage(file="image/text_field_popup02.png")
 NAME_FIELD   = PhotoImage(file="image/name_field.png")
 
 BED_BATTERY = PhotoImage(file="image/bed_battery.png")
+
+
+DICT_NFC1 = {"01": None, "02" : None, "03" : None, "04" : None, "05": None, "06": None}
 
 ## 초기 화면... & 대기화면
 def waitView():
@@ -211,7 +239,6 @@ def quit(*args):
 	global root, run
 	root.destroy()
 	run = False
-	UDP_SOCKET.close()
 	Thread1.join()
 
 def weather(*args):
@@ -272,6 +299,7 @@ def battery(value):
 	bat_bg_index = int(value/10)
 	first_value =	value%10
 	second_value =  int(value/10)
+
 	## BACKGROUND CHANGE...
 	
 	print(int(bat_bg_index))
@@ -315,13 +343,13 @@ def battery(value):
 	if value <= 30:
 		canvas.itemconfig(SECOND, image=constant.RED[second_value])
 		canvas.itemconfig(FIRST, image=constant.RED[first_value])
+
 	elif value <= 55:
 		canvas.itemconfig(SECOND, image=constant.ORANGE[second_value])
 		canvas.itemconfig(FIRST, image=constant.ORANGE[first_value])
 	elif value <= 75:
 		canvas.itemconfig(SECOND, image=constant.GREEN[second_value])
 		canvas.itemconfig(FIRST, image=constant.GREEN[first_value])
-
 	elif value <= 100:
 		canvas.itemconfig(SECOND, image=constant.BLUE[second_value])
 		canvas.itemconfig(FIRST, image=constant.BLUE[first_value])
@@ -348,27 +376,44 @@ def hello_after():
 
 
 def uart_server():
-	global UART, run
-	UART = serial.Serial(USBPORT, BAUDRATE, timeout = 1)
+	global UART, run, S3_flag, S2_flag, S1_flag
 
-	GPIO.setup(18, GPIO.OUT)
-	GPIO.setup(23, GPIO.OUT)
-	GPIO.setup(12, GPIO.IN)
+	UART = serial.Serial(USBPORT, BAUDRATE, timeout = UART_TIME)
 
-	GPIO.output(18, False)
-	GPIO.output(23, False)
+	GPIO.setup(S1, GPIO.OUT)
+	GPIO.setup(S2, GPIO.OUT)
+	GPIO.setup(S3, GPIO.OUT)
+
+	### First Uart..
+	index = 0
 	while run:
+
+		if index == 7:
+			index = 0
+
+		GPIO.output(S1, S1_flag)
+		GPIO.output(S2, S2_flag)
+		GPIO.output(S3, S3_flag)
+
 		readData = UART.readline()
 
-		if len(readData) != 0:
-			data = readData.decode('ascii')
-			print("GPIO(12) : " + GPIO.input(18))
-			print("data : " + data) #DEBUG
+		#read data is not null,,,,,,
 
-			arrData = data.split(',') # #R/T/01/data
+		if len(readData) != 0:
+			sector_arr = ["01","02", "03", "04", "05", "06"]
+
+			for sector in sector_arr:
+				response = read2check(b"#R,T,", sector)
+
+				if response != None:
+					DICT_NFC1[sector] = response
+
+					print("sector : " + sector + " value : " + response)
+
 		else:
 			pass
 
+		index += 1
 def init():
 	
 	global canvas, frame, Thread1
@@ -390,6 +435,69 @@ def init():
 	root.after(100, hello_after)
 	root.mainloop()
 
+# CMD : #R,T, CMD : 01/02/03
+def read2check(cmd, sector):
+	global UART
+
+	data = cmd + sector + b"\r\n"
+	cmdStr = cmd.decode("ascii")
+
+	UART.write(data)
+
+	readData = UART.readline()
+
+	readStr = readData.decode("ascii")
+
+	if cmdStr in readStr:
+		resultData = readStr.replace(cmdStr, "").replace("\r\n", "")
+
+	else:
+		resultData = None
+
+	return resultData
+
+def convert(index):
+
+	global S3_flag, S2_flag, S1_flag
+
+	if index == 0:
+		S3_flag = 0
+		S2_flag = 0
+		S1_flag = 0
+
+	elif index == 1:
+		S3_flag = 0
+		S2_flag = 0
+		S1_flag = 1
+
+	elif index == 2:
+		S3_flag = 0
+		S2_flag = 1
+		S1_flag = 0
+
+	elif index == 3:
+		S3_flag = 0
+		S2_flag = 1
+		S1_flag = 1
+	elif index == 4:
+		S3_flag = 1
+		S2_flag = 0
+		S1_flag = 0
+
+	elif index == 5:
+		S3_flag = 1
+		S2_flag = 0
+		S1_flag = 1
+
+	elif index == 6:
+		S3_flag = 1
+		S2_flag = 1
+		S1_flag = 0
+
+	elif index == 7:
+		S3_flag = 1
+		S2_flag = 1
+		S1_flag = 1
 
 
 waitView()
