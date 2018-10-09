@@ -410,7 +410,6 @@ def uart_server():
 
 		readData = UART.readline()
 
-		print(readData)
 
 		#read data is not null,,,,,,
 
@@ -424,11 +423,9 @@ def uart_server():
 					if DICT_NFC1[sector] == None: #view start...
 						print(DICT_NFC1[b"01"])
 						print(DICT_NFC1[b"05"])
-						#battery(DICT_NFC1[b"01"], int(DICT_NFC1[b"05"]))	
 					DICT_NFC1[sector] = response
 					print("DICT_NFC1 CONNECT")
 
-					
 				else:
 					pass
 		else:
@@ -456,22 +453,19 @@ def init():
 	root.after(100, hello_after)
 	root.mainloop()
 
-# CMD : #R,T, CMD : 01/02/03
+# CMD : #R,T, CMD : 01/02/03:
 def read2check(cmd, sector):
 	global UART
 	
 	
 	data = cmd + sector + b"\r\n"
-	print(data)	
-	cmdStr = "#R," + sector.decode("ascii")
+	cmdStr = "#R," + sector.decode("ascii") + ","
 
 	UART.write(data)
 
 	readData = UART.readline()
 
 	readStr = readData.decode("ascii")
-
-	print(cmdStr in readStr)
 
 	if cmdStr in readStr:
 		resultData = readStr.replace(cmdStr, "").replace("\r\n", "")
@@ -526,25 +520,25 @@ def convert(index):
 		S1_flag = 1
 
 def dict_init(index):
-
-	global DICT_NFC0, DICT_NFC1, DICT_NFC2, DICT_NFC3, DICT_NFC4, DICT_NFC5, DICT_NFC6, DICT_NFC7
+	global DICT_NFC1, DICT_NFC0, DICT_NFC2, DICT_NFC3, DICT_NFC4, DICT_NFC5, DICT_NFC6, DICT_NFC7
 
 	if index == 0:
-		DICT_NFC0 =[]
+		DICT_NFC0 = {b"01": None, b"02": None, b"03": None, b"04": None, b"05": None, b"06": None}
 	elif index == 1:
-		DICT_NFC1 = []
+		DICT_NFC1 = {b"01": None, b"02": None, b"03": None, b"04": None, b"05": None, b"06": None}
 	elif index == 2:
-		DICT_NFC2 = []
+		DICT_NFC2 = {b"01": None, b"02": None, b"03": None, b"04": None, b"05": None, b"06": None}
 	elif index == 3:
-		DICT_NFC3 = []
+		DICT_NFC3 = {b"01": None, b"02": None, b"03": None, b"04": None, b"05": None, b"06": None}
 	elif index == 4:
-		DICT_NFC4 = []
+		DICT_NFC4 = {b"01": None, b"02": None, b"03": None, b"04": None, b"05": None, b"06": None}
 	elif index == 5:
-		DICT_NFC5 = []
+		DICT_NFC5 = {b"01": None, b"02": None, b"03": None, b"04": None, b"05": None, b"06": None}
 	elif index == 6:
-		DICT_NFC6 = []
+		DICT_NFC6 = {b"01": None, b"02": None, b"03": None, b"04": None, b"05": None, b"06": None}
 	elif index == 7:
-		DICT_NFC7 = []
+		DICT_NFC7 = {b"01": None, b"02": None, b"03": None, b"04": None, b"05": None, b"06": None}
+
 
 
 waitView()
