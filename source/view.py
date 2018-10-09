@@ -86,7 +86,7 @@ UART		= None
 BAUDRATE	= 38400
 
 TIME = 0
-UART_TIME = 0.5
+UART_TIME = 0.5 
 USBPORT = '/dev/ttyAMA0'
 
 ##GPIO
@@ -150,16 +150,22 @@ NAME_FIELD   = PhotoImage(file="image/name_field.png")
 BED_BATTERY = PhotoImage(file="image/bed_battery.png")
 
 
-DICT_NFC1 = {"01": None, "02" : None, "03" : None, "04" : None, "05": None, "06": None}
+DICT_NFC0 = {b"01": None, b"02" : None, b"03" : None, b"04" : None, b"05": None, b"06": None}
+DICT_NFC1 = {b"01": None, b"02" : None, b"03" : None, b"04" : None, b"05": None, b"06": None}
+DICT_NFC2 = {b"01": None, b"02" : None, b"03" : None, b"04" : None, b"05": None, b"06": None}
+DICT_NFC3 = {b"01": None, b"02" : None, b"03" : None, b"04" : None, b"05": None, b"06": None}
+DICT_NFC4 = {b"01": None, b"02" : None, b"03" : None, b"04" : None, b"05": None, b"06": None}
+DICT_NFC5 = {b"01": None, b"02" : None, b"03" : None, b"04" : None, b"05": None, b"06": None}
+DICT_NFC6 = {b"01": None, b"02" : None, b"03" : None, b"04" : None, b"05": None, b"06": None}
+DICT_NFC7 = {b"01": None, b"02" : None, b"03" : None, b"04" : None, b"05": None, b"06": None}
 
-## 초기 화면... & 대기화면
 def waitView():
 
 	global BACKGROUND, NAMEFIELD, GREET, FIRST, SECOND, THIRD, MARK, SENTENCE, NOBATTERY, NAME
+	index = random.randrange(0, 4)
 
 	Weather = [BLUR, CLOUD, CLOUDSUN, RAIN, SUN]
 
-	index = random.randrange(0, 4)
 	if BACKGROUND == None:
 		BACKGROUND 	= canvas.create_image( 1, 0, image=Weather[index], anchor=NW)
 		THIRD		= canvas.create_image(Temp_ThirdX, Temp_ThirdY, image= constant.CHROME[1])
@@ -173,7 +179,7 @@ def waitView():
 		SENTENCE	= canvas.create_image(SentanceX, SentanceY, image=POPUP01)
 		NOBATTERY	= canvas.create_image(NoBatteryX, NoBatteryY, image=NO_BATTERY)
 		NAME		= canvas.create_text(NameX, NameY, fill="white", font=("Noto Sans Korean", 90),
-                        text="Zenny")
+						text="Zenny")
 
 	## background change..Noto Sans Korean Light  Abcdefghxxklm
 	canvas.itemconfig(BACKGROUND, image=Weather[index])
@@ -240,6 +246,7 @@ def quit(*args):
 	root.destroy()
 	run = False
 	Thread1.join()
+	GPIO.cleanup()
 
 def weather(*args):
 
@@ -292,7 +299,7 @@ def battery_state(*args):
 	canvas.coords(MARK, Bat_MarkX, Bat_MarkY)
 
 	
-def battery(value):
+def battery(name, value):
 
 	global constant
 
@@ -321,9 +328,9 @@ def battery(value):
 
 	elif value == 100:
 		canvas.itemconfig(BACKGROUND, image=constant.BATTERY[10])
-		canvas.itemconfig(THIRD, state='normal') 				#백의 자리
-		canvas.itemconfig(SECOND, image=constant.CHROME[0]) 	#십의 자리
-		canvas.itemconfig(FIRST, image=constant.CHROME[0]) 		#일의 자리
+		canvas.itemconfig(THIRD, state='normal') 			
+		canvas.itemconfig(SECOND, image=constant.CHROME[0]) 	
+		canvas.itemconfig(FIRST, image=constant.CHROME[0]) 	
 		canvas.itemconfig(SENTENCE, state='normal')
 		canvas.itemconfig(SENTENCE, image=POPUP01)
 		canvas.itemconfig(MARK, state='normal')
@@ -337,6 +344,8 @@ def battery(value):
 		canvas.itemconfig(FIRST, state='normal')
 		canvas.itemconfig(MARK, state='normal')
 		canvas.itemconfig(NAME, state='normal')
+
+		canvas.itemconfig(NAME, text=name)
 	
 
 	## CHANGE...
@@ -380,6 +389,7 @@ def uart_server():
 
 	UART = serial.Serial(USBPORT, BAUDRATE, timeout = UART_TIME)
 
+	GPIO.setmode(GPIO.BCM)
 	GPIO.setup(S1, GPIO.OUT)
 	GPIO.setup(S2, GPIO.OUT)
 	GPIO.setup(S3, GPIO.OUT)
@@ -391,29 +401,40 @@ def uart_server():
 		if index == 7:
 			index = 0
 
+		convert(index)
 		GPIO.output(S1, S1_flag)
 		GPIO.output(S2, S2_flag)
 		GPIO.output(S3, S3_flag)
 
+		UART.write(b"#R,T,00\r\n")
+
 		readData = UART.readline()
+
+		print(readData)
 
 		#read data is not null,,,,,,
 
 		if len(readData) != 0:
-			sector_arr = ["01","02", "03", "04", "05", "06"]
+			sector_arr = [b"01",b"02", b"03", b"04", b"05", b"06"]
 
 			for sector in sector_arr:
 				response = read2check(b"#R,T,", sector)
 
-				if response != None:
+				if index== 0 and response != None:
+					if DICT_NFC1[sector] == None: #view start...
+						print(DICT_NFC1[b"01"])
+						print(DICT_NFC1[b"05"])
+						#battery(DICT_NFC1[b"01"], int(DICT_NFC1[b"05"]))	
 					DICT_NFC1[sector] = response
+					print("DICT_NFC1 CONNECT")
 
-					print("sector : " + sector + " value : " + response)
-
+					
+				else:
+					pass
 		else:
-			pass
-
+			dict_init(index)
 		index += 1
+		
 def init():
 	
 	global canvas, frame, Thread1
@@ -438,9 +459,11 @@ def init():
 # CMD : #R,T, CMD : 01/02/03
 def read2check(cmd, sector):
 	global UART
-
+	
+	
 	data = cmd + sector + b"\r\n"
-	cmdStr = cmd.decode("ascii")
+	print(data)	
+	cmdStr = "#R," + sector.decode("ascii")
 
 	UART.write(data)
 
@@ -448,10 +471,13 @@ def read2check(cmd, sector):
 
 	readStr = readData.decode("ascii")
 
+	print(cmdStr in readStr)
+
 	if cmdStr in readStr:
 		resultData = readStr.replace(cmdStr, "").replace("\r\n", "")
 
 	else:
+		print(readStr)
 		resultData = None
 
 	return resultData
@@ -498,6 +524,27 @@ def convert(index):
 		S3_flag = 1
 		S2_flag = 1
 		S1_flag = 1
+
+def dict_init(index):
+
+	global DICT_NFC0, DICT_NFC1, DICT_NFC2, DICT_NFC3, DICT_NFC4, DICT_NFC5, DICT_NFC6, DICT_NFC7
+
+	if index == 0:
+		DICT_NFC0 =[]
+	elif index == 1:
+		DICT_NFC1 = []
+	elif index == 2:
+		DICT_NFC2 = []
+	elif index == 3:
+		DICT_NFC3 = []
+	elif index == 4:
+		DICT_NFC4 = []
+	elif index == 5:
+		DICT_NFC5 = []
+	elif index == 6:
+		DICT_NFC6 = []
+	elif index == 7:
+		DICT_NFC7 = []
 
 
 waitView()
