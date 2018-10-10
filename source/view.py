@@ -86,7 +86,7 @@ UART		= None
 BAUDRATE	= 38400
 
 TIME = 0
-UART_TIME = 0.5 
+UART_TIME = 1 
 USBPORT = '/dev/ttyAMA0'
 
 ##GPIO
@@ -150,16 +150,16 @@ NAME_FIELD   = PhotoImage(file="image/name_field.png")
 BED_BATTERY = PhotoImage(file="image/bed_battery.png")
 
 
-DICT_NFC0 = {b"01": None, b"02" : None, b"03" : None, b"04" : None, b"05": None, b"06": None}
-DICT_NFC1 = {b"01": None, b"02" : None, b"03" : None, b"04" : None, b"05": None, b"06": None}
-DICT_NFC2 = {b"01": None, b"02" : None, b"03" : None, b"04" : None, b"05": None, b"06": None}
-DICT_NFC3 = {b"01": None, b"02" : None, b"03" : None, b"04" : None, b"05": None, b"06": None}
-DICT_NFC4 = {b"01": None, b"02" : None, b"03" : None, b"04" : None, b"05": None, b"06": None}
-DICT_NFC5 = {b"01": None, b"02" : None, b"03" : None, b"04" : None, b"05": None, b"06": None}
-DICT_NFC6 = {b"01": None, b"02" : None, b"03" : None, b"04" : None, b"05": None, b"06": None}
-DICT_NFC7 = {b"01": None, b"02" : None, b"03" : None, b"04" : None, b"05": None, b"06": None}
+DICT_NFC0 = {b"01": None, b"02" : None, b"03" : None, b"04" : None, b"05": None, b"06": None, "view" : 0}
+DICT_NFC1 = {b"01": None, b"02" : None, b"03" : None, b"04" : None, b"05": None, b"06": None, "view" : 0}
+DICT_NFC2 = {b"01": None, b"02" : None, b"03" : None, b"04" : None, b"05": None, b"06": None, "view" : 0}
+DICT_NFC3 = {b"01": None, b"02" : None, b"03" : None, b"04" : None, b"05": None, b"06": None, "view" : 0}
+DICT_NFC4 = {b"01": None, b"02" : None, b"03" : None, b"04" : None, b"05": None, b"06": None, "view" : 0}
+DICT_NFC5 = {b"01": None, b"02" : None, b"03" : None, b"04" : None, b"05": None, b"06": None, "view" : 0}
+DICT_NFC6 = {b"01": None, b"02" : None, b"03" : None, b"04" : None, b"05": None, b"06": None, "view" : 0}
+DICT_NFC7 = {b"01": None, b"02" : None, b"03" : None, b"04" : None, b"05": None, b"06": None, "view" : 0}
 
-DICT_ARR = [DICT_NFC0, DICT_NFC1. DICT_NFC2, DICT_NFC3, DICT_NFC4, DICT_NFC5, DICT_NFC6, DICT_NFC7]
+DICT_ARR = [DICT_NFC0, DICT_NFC1, DICT_NFC2, DICT_NFC3, DICT_NFC4, DICT_NFC5, DICT_NFC6, DICT_NFC7]
 
 def waitView():
 
@@ -404,7 +404,7 @@ def uart_server():
 	index = 0
 	while run:
 
-		if index == 7:
+		if index == 3:
 			index = 0
 
 		convert(index)
@@ -412,51 +412,54 @@ def uart_server():
 		GPIO.output(S2, S2_flag)
 		GPIO.output(S3, S3_flag)
 
-		GPIO.output(S1, 0)
-		GPIO.output(S2, 0)
-		GPIO.output(S3, 0)
 
 		UART.write(b"#R,T,00\r\n")
 
 		readData = UART.readline()
+		
+		try:
+			print("READ : " + readData.decode("ascii"))
+			#read data is not null,,,,,,
+
+			if len(readData) != 0:
+				sector_arr = [b"01",b"02", b"03", b"04", b"05", b"06"]
+				view_start = False
+
+				for sector in sector_arr:
+					response = read2check(b"#R,T,", sector)
+					DICT_ARR[index][sector] = response
+
+				if DICT_ARR[index]["view"] == 0: # default -> view command
+					DICT_ARR[index]["view"] = 1
+
+				view = 	DICT_ARR[index]["view"]
+				name = DICT_ARR[index][b"01"]
+				value = DICT_ARR[index][b"05"]
 
 
-		#read data is not null,,,,,,
 
-		if len(readData) != 0:
-			sector_arr = [b"01",b"02", b"03", b"04", b"05", b"06"]
-			view_start = False
+				if view == 1 and name != None and value != None:
+					print("NAME : " + name + " VALUE : " + value + " VIEW : " + str(view))
+					battery(index, name, int(value))
+					DICT_ARR[index]["view"] = -1 # view -> wait..
 
-			for sector in sector_arr:
-				response = read2check(b"#R,T,", sector)
-				DICT_ARR[index][sector] = response
-
-			if DICT_ARR[index]["view"] == 0: # default -> view command
-				DICT_ARR[index]["view"] = 1
-
-			view = 	DICT_ARR[index]["view"]
-			name = DICT_ARR[index][b"01"]
-			value = DICT_ARR[index][b"05"]
-
-			if view == 1 and name != None and value != None:
-				battery(index, name, int(value))
-				DICT_ARR[index]["view"] = -1 # view -> wait..
-
-			elif view == 1 and name == None: # nothing value... is bad view..
-				badView()
-				DICT_ARR[index]["view"] = -1
+				elif view == 1 and name == None: # nothing value... is bad view..
+					badView()
+					DICT_ARR[index]["view"] = -1
 
 
-		else:
-			dict_init(index)
-		index += 1
+			else:
+				dict_init(index)
+			index += 1
+		except TypeError:
+			print("TypeError")
 		
 def init():
 	
 	global canvas, frame, Thread1
 
 	
-	# root.attributes("-fullscreen", True)
+	root.attributes("-fullscreen", True)
 
 	root.bind("<Escape>", quit)    
 	root.bind("x", quit) 
@@ -475,8 +478,8 @@ def init():
 # CMD : #R,T, CMD : 01/02/03:
 def read2check(cmd, sector):
 	global UART
-	
-	
+		
+	resultData = None
 	data = cmd + sector + b"\r\n"
 	cmdStr = "#R," + sector.decode("ascii") + ","
 
@@ -484,14 +487,20 @@ def read2check(cmd, sector):
 
 	readData = UART.readline()
 
-	readStr = readData.decode("ascii")
+	try:
+		if readData != None:
+			readStr = readData.decode("ascii")
 
-	if cmdStr in readStr:
-		resultData = readStr.replace(cmdStr, "").replace("\r\n", "").replace("\r", "").replace("\x00","")
+			if cmdStr in readStr:
+				resultData = readStr.replace(cmdStr, "").replace("\r\n", "").replace("\r", "").replace("\x00","")
 
-	else:
-		resultData = None
-
+			else:
+				resultData = None
+	
+	except UnicodeDecodeError: 
+		print("fail battery")
+		return resultData
+		
 	return resultData
 
 def convert(index):
@@ -517,6 +526,7 @@ def convert(index):
 		S3_flag = 0
 		S2_flag = 1
 		S1_flag = 1
+
 	elif index == 4:
 		S3_flag = 1
 		S2_flag = 0
@@ -538,7 +548,15 @@ def convert(index):
 		S1_flag = 1
 
 def dict_init(index):
-	global DICT_NFC1, DICT_NFC0, DICT_NFC2, DICT_NFC3, DICT_NFC4, DICT_NFC5, DICT_NFC6, DICT_NFC7
+	global DICT_ARR, DICT_NFC1, DICT_NFC0, DICT_NFC2, DICT_NFC3, DICT_NFC4, DICT_NFC5, DICT_NFC6, DICT_NFC7
+	
+	DICT_ARR[index][b"01"] = None 
+	DICT_ARR[index][b"02"] = None 
+	DICT_ARR[index][b"03"] = None 
+	DICT_ARR[index][b"04"] = None 
+	DICT_ARR[index][b"05"] = None 
+	DICT_ARR[index][b"06"] = None 
+	DICT_ARR[index]["view"] = 0 
 
 	if index == 0:
 		DICT_NFC0 = {b"01": None, b"02": None, b"03": None, b"04": None, b"05": None, b"06": None, "view" : 0} # 0 : default / 1 : view flag / -1 : wait
