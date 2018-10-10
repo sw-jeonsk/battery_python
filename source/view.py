@@ -18,7 +18,14 @@ import RPi.GPIO as GPIO
 import serial
 
 import time
+import logging
+import optparse
 
+LOGGING_LEVELS = {'critical': logging.CRITICAL,
+                  'error': logging.ERROR,
+                  'warning': logging.WARNING,
+                  'info': logging.INFO,
+                  'debug': logging.DEBUG}
 ## CONST.............
 
 log = logging.getLogger('udp_server')
@@ -97,6 +104,7 @@ S3= 11
 S1_flag = 0
 S2_flag = 0
 S3_flag = 0
+
 #output...
 CHARGE_EN1 = 18
 CHARGE_EN2 = 23
@@ -237,9 +245,9 @@ def badView():
 
 def hello_thread():
 	while run:
-		print("Hello world")
+		logging.info("Hello world")
 		time.sleep(1)
-	print("goodbye World")
+	logging.info("goodbye World")
 	
 
 
@@ -250,132 +258,85 @@ def quit(*args):
 	Thread1.join()
 	GPIO.cleanup()
 
-def weather(*args):
-
-	global canvas, mark, percent_mark
-
-	canvas.itemconfig(BACKGROUND, image=CLOUD)
-
-	## HIDDEN...
-	canvas.itemconfig(NAMEFIELD, state="hidden")
-	canvas.itemconfig(GREET, state='hidden')
-
-	## NORMAL...
-	canvas.itemconfig(SECOND, state="normal")
-	canvas.itemconfig(FIRST, state='normal')
-	canvas.itemconfig(MARK, state='normal')
-
-	## CHANGE...
-	canvas.itemconfig(SECOND, image=constant.CHROME[5])
-	canvas.itemconfig(FIRST, image=constant.CHROME[2])
-	canvas.itemconfig(MARK, image=TEMPER_MARK)
-	
-	## LOCATION CHANGE...
-	canvas.coords(FIRST ,Temp_FirstX, Temp_FirstY)
-	canvas.coords(SECOND, Temp_SecondX, Temp_SecondY)
-	canvas.coords(MARK, Temp_MarkX, Temp_MarkY)
-
-
-def battery_state(*args):
-
-	## BACKGROUND CHANGE...
-	canvas.itemconfig(BACKGROUND, image=constant.BATTERY[10])
-
-	## HIDDEN...
-	canvas.itemconfig(NAMEFIELD, state="normal")
-	canvas.itemconfig(GREET, state='normal')
-
-	## NORMAL...
-	canvas.itemconfig(SECOND, state="normal")
-	canvas.itemconfig(FIRST, state='normal')
-	canvas.itemconfig(MARK, state='normal')
-
-	## CHANGE...
-	canvas.itemconfig(SECOND, image=constant.BLUE[9])
-	canvas.itemconfig(FIRST, image=constant.BLUE[0])
-	canvas.itemconfig(MARK, image=PERCENT_MARK)
-
-	## LOCATION CHANGE...
-	canvas.coords(FIRST ,Bat_FirstX, Bat_FirstY)
-	canvas.coords(SECOND, Bat_SecondX, Bat_SecondY)
-	canvas.coords(MARK, Bat_MarkX, Bat_MarkY)
-
 	
 def battery(index, name, value):
 
-	global constant
-	print("#########################################")
-	print("INDEX : " + str(index))
-	print("NAME : " + name)
-	print("VALUE : " +str(value))
+	global constant, TIME
 
-	bat_bg_index = int(value/10)
-	first_value =	value%10
-	second_value =  int(value/10)
+	try:
+		logging.info("#########################################")
+		logging.info("INDEX : " + str(index))
+		logging.info("NAME : " + name)
+		logging.info("VALUE : " +str(value))
 
-	## BACKGROUND CHANGE...
-	
-	print(int(bat_bg_index))
-	print(int(first_value))
-	print(second_value)
-	
-	canvas.itemconfig(BACKGROUND, image=constant.BATTERY[bat_bg_index])
+		TIME = 0
+		bat_bg_index = int(value/10)
+		first_value =	value%10
+		second_value =  int(value/10)
 
-	## HIDDEN...
-	canvas.itemconfig(NOBATTERY, state='hidden')
-	canvas.itemconfig(SENTENCE, state='hidden')
-	
-	if value >= 99:
-		canvas.itemconfig(BACKGROUND, image=constant.BATTERY[10])
-		canvas.itemconfig(SENTENCE, state='normal')
-		canvas.itemconfig(SENTENCE, image=POPUP01)
-		canvas.itemconfig(MARK, state='normal')
+		## BACKGROUND CHANGE...
+		logging.info(int(bat_bg_index))
+		logging.info(int(first_value))
+		logging.info(second_value)
 
+		canvas.itemconfig(BACKGROUND, image=constant.BATTERY[bat_bg_index])
 
-	elif value == 100:
-		canvas.itemconfig(BACKGROUND, image=constant.BATTERY[10])
-		canvas.itemconfig(THIRD, state='normal') 			
-		canvas.itemconfig(SECOND, image=constant.CHROME[0]) 	
-		canvas.itemconfig(FIRST, image=constant.CHROME[0]) 	
-		canvas.itemconfig(SENTENCE, state='normal')
-		canvas.itemconfig(SENTENCE, image=POPUP01)
-		canvas.itemconfig(MARK, state='normal')
+		## HIDDEN...
+		canvas.itemconfig(NOBATTERY, state='hidden')
+		canvas.itemconfig(SENTENCE, state='hidden')
+
+		if value >= 99:
+			canvas.itemconfig(BACKGROUND, image=constant.BATTERY[10])
+			canvas.itemconfig(SENTENCE, state='normal')
+			canvas.itemconfig(SENTENCE, image=POPUP01)
+			canvas.itemconfig(MARK, state='normal')
 
 
-	else:
-		## NORMAL...
-		canvas.itemconfig(NAMEFIELD, state="normal")
-		canvas.itemconfig(GREET, state='normal')
-		canvas.itemconfig(SECOND, state="normal")
-		canvas.itemconfig(FIRST, state='normal')
-		canvas.itemconfig(MARK, state='normal')
-		canvas.itemconfig(NAME, state='normal')
+		elif value == 100:
+			canvas.itemconfig(BACKGROUND, image=constant.BATTERY[10])
+			canvas.itemconfig(THIRD, state='normal')
+			canvas.itemconfig(SECOND, image=constant.CHROME[0])
+			canvas.itemconfig(FIRST, image=constant.CHROME[0])
+			canvas.itemconfig(SENTENCE, state='normal')
+			canvas.itemconfig(SENTENCE, image=POPUP01)
+			canvas.itemconfig(MARK, state='normal')
 
-		canvas.itemconfig(NAME, text=name)
-	
+		else:
+			## NORMAL...
+			canvas.itemconfig(NAMEFIELD, state="normal")
+			canvas.itemconfig(GREET, state='normal')
+			canvas.itemconfig(SECOND, state="normal")
+			canvas.itemconfig(FIRST, state='normal')
+			canvas.itemconfig(MARK, state='normal')
+			canvas.itemconfig(NAME, state='normal')
 
-	## CHANGE...
-	if value <= 30:
-		canvas.itemconfig(SECOND, image=constant.RED[second_value])
-		canvas.itemconfig(FIRST, image=constant.RED[first_value])
+			canvas.itemconfig(NAME, text=name)
 
-	elif value <= 55:
-		canvas.itemconfig(SECOND, image=constant.ORANGE[second_value])
-		canvas.itemconfig(FIRST, image=constant.ORANGE[first_value])
-	elif value <= 75:
-		canvas.itemconfig(SECOND, image=constant.GREEN[second_value])
-		canvas.itemconfig(FIRST, image=constant.GREEN[first_value])
-	elif value <= 100:
-		canvas.itemconfig(SECOND, image=constant.BLUE[second_value])
-		canvas.itemconfig(FIRST, image=constant.BLUE[first_value])
-		
-	canvas.itemconfig(MARK, image=PERCENT_MARK)
+		## CHANGE...
+		if value <= 30:
+			canvas.itemconfig(SECOND, image=constant.RED[second_value])
+			canvas.itemconfig(FIRST, image=constant.RED[first_value])
 
-	## LOCATION CHANGE...
-	canvas.coords(FIRST ,Bat_FirstX, Bat_FirstY)
-	canvas.coords(SECOND, Bat_SecondX, Bat_SecondY)
-	canvas.coords(MARK, Bat_MarkX, Bat_MarkY)
+		elif value <= 55:
+			canvas.itemconfig(SECOND, image=constant.ORANGE[second_value])
+			canvas.itemconfig(FIRST, image=constant.ORANGE[first_value])
+		elif value <= 75:
+			canvas.itemconfig(SECOND, image=constant.GREEN[second_value])
+			canvas.itemconfig(FIRST, image=constant.GREEN[first_value])
+		elif value <= 100:
+			canvas.itemconfig(SECOND, image=constant.BLUE[second_value])
+			canvas.itemconfig(FIRST, image=constant.BLUE[first_value])
 
+		canvas.itemconfig(MARK, image=PERCENT_MARK)
+
+		## LOCATION CHANGE...
+		canvas.coords(FIRST ,Bat_FirstX, Bat_FirstY)
+		canvas.coords(SECOND, Bat_SecondX, Bat_SecondY)
+		canvas.coords(MARK, Bat_MarkX, Bat_MarkY)
+	except ValueError:
+		logging.error("FUNC[battery] Value Error...")
+		parameter = str(index) + ", " + str(name) + "," + str(value)
+		logging.error(parameter)
 
 
 
@@ -418,12 +379,11 @@ def uart_server():
 		readData = UART.readline()
 		
 		try:
-			print("READ : " + readData.decode("ascii"))
+			logging.info("READ : " + readData.decode("ascii"))
 			#read data is not null,,,,,,
 
 			if len(readData) != 0:
 				sector_arr = [b"01",b"02", b"03", b"04", b"05", b"06"]
-				view_start = False
 
 				for sector in sector_arr:
 					response = read2check(b"#R,T,", sector)
@@ -439,7 +399,7 @@ def uart_server():
 
 
 				if view == 1 and name != None and value != None:
-					print("NAME : " + name + " VALUE : " + value + " VIEW : " + str(view))
+					logging.info("NAME : " + name + " VALUE : " + value + " VIEW : " + str(view))
 					battery(index, name, int(value))
 					DICT_ARR[index]["view"] = -1 # view -> wait..
 
@@ -452,20 +412,26 @@ def uart_server():
 				dict_init(index)
 			index += 1
 		except TypeError:
-			print("TypeError")
+			logging.error("FUNC[uart_server] TypeError")
 		
 def init():
 	
 	global canvas, frame, Thread1
 
-	
+	parser = optparse.OptionParser()
+	parser.add_option('-l', '--logging-level', help='Logging level')
+	parser.add_option('-f', '--logging-file', help='Logging file name')
+	(options, args) = parser.parse_args()
+	logging_level = LOGGING_LEVELS.get(options.logging_level, logging.NOTSET)
+	logging.basicConfig(level=logging_level, filename=options.logging_file,
+						format='%(asctime)s %(levelname)s: %(message)s',
+						datefmt='%Y-%m-%d %H:%M:%S')
+
 	root.attributes("-fullscreen", True)
 
 	root.bind("<Escape>", quit)    
 	root.bind("x", quit) 
 
-	root.bind("w", weather)
-	root.bind("b", battery_state)
 	frame.pack()
 
 	Thread1 = threading.Thread(target=uart_server)
@@ -497,8 +463,8 @@ def read2check(cmd, sector):
 			else:
 				resultData = None
 	
-	except UnicodeDecodeError: 
-		print("fail battery")
+	except UnicodeDecodeError:
+		logging.error("fail battery")
 		return resultData
 		
 	return resultData
@@ -556,24 +522,8 @@ def dict_init(index):
 	DICT_ARR[index][b"04"] = None 
 	DICT_ARR[index][b"05"] = None 
 	DICT_ARR[index][b"06"] = None 
-	DICT_ARR[index]["view"] = 0 
+	DICT_ARR[index]["view"] = 0  # 0 : default / 1 : view flag / -1 : wait
 
-	if index == 0:
-		DICT_NFC0 = {b"01": None, b"02": None, b"03": None, b"04": None, b"05": None, b"06": None, "view" : 0} # 0 : default / 1 : view flag / -1 : wait
-	elif index == 1:
-		DICT_NFC1 = {b"01": None, b"02": None, b"03": None, b"04": None, b"05": None, b"06": None, "view" : 0}
-	elif index == 2:
-		DICT_NFC2 = {b"01": None, b"02": None, b"03": None, b"04": None, b"05": None, b"06": None, "view" : 0}
-	elif index == 3:
-		DICT_NFC3 = {b"01": None, b"02": None, b"03": None, b"04": None, b"05": None, b"06": None, "view" : 0}
-	elif index == 4:
-		DICT_NFC4 = {b"01": None, b"02": None, b"03": None, b"04": None, b"05": None, b"06": None, "view" : 0}
-	elif index == 5:
-		DICT_NFC5 = {b"01": None, b"02": None, b"03": None, b"04": None, b"05": None, b"06": None, "view" : 0}
-	elif index == 6:
-		DICT_NFC6 = {b"01": None, b"02": None, b"03": None, b"04": None, b"05": None, b"06": None, "view" : 0}
-	elif index == 7:
-		DICT_NFC7 = {b"01": None, b"02": None, b"03": None, b"04": None, b"05": None, b"06": None, "view" : 0}
 
 
 
