@@ -159,6 +159,8 @@ DICT_NFC5 = {b"01": None, b"02" : None, b"03" : None, b"04" : None, b"05": None,
 DICT_NFC6 = {b"01": None, b"02" : None, b"03" : None, b"04" : None, b"05": None, b"06": None}
 DICT_NFC7 = {b"01": None, b"02" : None, b"03" : None, b"04" : None, b"05": None, b"06": None}
 
+DICT_ARR = [DICT_NFC0, DICT_NFC1. DICT_NFC2, DICT_NFC3, DICT_NFC4, DICT_NFC5, DICT_NFC6, DICT_NFC7]
+
 def waitView():
 
 	global BACKGROUND, NAMEFIELD, GREET, FIRST, SECOND, THIRD, MARK, SENTENCE, NOBATTERY, NAME
@@ -299,10 +301,11 @@ def battery_state(*args):
 	canvas.coords(MARK, Bat_MarkX, Bat_MarkY)
 
 	
-def battery(name, value):
+def battery(index, name, value):
 
 	global constant
-
+	print("#########################################")
+	print("INDEX : " + str(index))
 	print("NAME : " + name)
 	print("VALUE : " +str(value))
 
@@ -388,7 +391,7 @@ def hello_after():
 
 
 def uart_server():
-	global UART, run, S3_flag, S2_flag, S1_flag
+	global UART, run, S3_flag, S2_flag, S1_flag, DICT_ARR
 
 	UART = serial.Serial(USBPORT, BAUDRATE, timeout = UART_TIME)
 
@@ -426,12 +429,23 @@ def uart_server():
 
 			for sector in sector_arr:
 				response = read2check(b"#R,T,", sector)
-				DICT_NFC1[sector] = response
-			name = DICT_NFC1[b"01"]	
-			value = DICT_NFC1[b"05"]	
+				DICT_ARR[index][sector] = response
 
-			if name != None and value != None:
-				battery(name, int(value))
+			if DICT_ARR[index]["view"] == 0: # default -> view command
+				DICT_ARR[index]["view"] = 1
+
+			view = 	DICT_ARR[index]["view"]
+			name = DICT_ARR[index][b"01"]
+			value = DICT_ARR[index][b"05"]
+
+			if view == 1 and name != None and value != None:
+				battery(index, name, int(value))
+				DICT_ARR[index]["view"] = -1 # view -> wait..
+
+			elif view == 1 and name == None: # nothing value... is bad view..
+				badView()
+				DICT_ARR[index]["view"] = -1
+
 
 		else:
 			dict_init(index)
@@ -527,21 +541,21 @@ def dict_init(index):
 	global DICT_NFC1, DICT_NFC0, DICT_NFC2, DICT_NFC3, DICT_NFC4, DICT_NFC5, DICT_NFC6, DICT_NFC7
 
 	if index == 0:
-		DICT_NFC0 = {b"01": None, b"02": None, b"03": None, b"04": None, b"05": None, b"06": None}
+		DICT_NFC0 = {b"01": None, b"02": None, b"03": None, b"04": None, b"05": None, b"06": None, "view" : 0} # 0 : default / 1 : view flag / -1 : wait
 	elif index == 1:
-		DICT_NFC1 = {b"01": None, b"02": None, b"03": None, b"04": None, b"05": None, b"06": None}
+		DICT_NFC1 = {b"01": None, b"02": None, b"03": None, b"04": None, b"05": None, b"06": None, "view" : 0}
 	elif index == 2:
-		DICT_NFC2 = {b"01": None, b"02": None, b"03": None, b"04": None, b"05": None, b"06": None}
+		DICT_NFC2 = {b"01": None, b"02": None, b"03": None, b"04": None, b"05": None, b"06": None, "view" : 0}
 	elif index == 3:
-		DICT_NFC3 = {b"01": None, b"02": None, b"03": None, b"04": None, b"05": None, b"06": None}
+		DICT_NFC3 = {b"01": None, b"02": None, b"03": None, b"04": None, b"05": None, b"06": None, "view" : 0}
 	elif index == 4:
-		DICT_NFC4 = {b"01": None, b"02": None, b"03": None, b"04": None, b"05": None, b"06": None}
+		DICT_NFC4 = {b"01": None, b"02": None, b"03": None, b"04": None, b"05": None, b"06": None, "view" : 0}
 	elif index == 5:
-		DICT_NFC5 = {b"01": None, b"02": None, b"03": None, b"04": None, b"05": None, b"06": None}
+		DICT_NFC5 = {b"01": None, b"02": None, b"03": None, b"04": None, b"05": None, b"06": None, "view" : 0}
 	elif index == 6:
-		DICT_NFC6 = {b"01": None, b"02": None, b"03": None, b"04": None, b"05": None, b"06": None}
+		DICT_NFC6 = {b"01": None, b"02": None, b"03": None, b"04": None, b"05": None, b"06": None, "view" : 0}
 	elif index == 7:
-		DICT_NFC7 = {b"01": None, b"02": None, b"03": None, b"04": None, b"05": None, b"06": None}
+		DICT_NFC7 = {b"01": None, b"02": None, b"03": None, b"04": None, b"05": None, b"06": None, "view" : 0}
 
 
 
