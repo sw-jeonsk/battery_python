@@ -303,6 +303,9 @@ def battery(name, value):
 
 	global constant
 
+	print("NAME : " + name)
+	print("VALUE : " +str(value))
+
 	bat_bg_index = int(value/10)
 	first_value =	value%10
 	second_value =  int(value/10)
@@ -406,6 +409,10 @@ def uart_server():
 		GPIO.output(S2, S2_flag)
 		GPIO.output(S3, S3_flag)
 
+		GPIO.output(S1, 0)
+		GPIO.output(S2, 0)
+		GPIO.output(S3, 0)
+
 		UART.write(b"#R,T,00\r\n")
 
 		readData = UART.readline()
@@ -415,19 +422,17 @@ def uart_server():
 
 		if len(readData) != 0:
 			sector_arr = [b"01",b"02", b"03", b"04", b"05", b"06"]
+			view_start = False
 
 			for sector in sector_arr:
 				response = read2check(b"#R,T,", sector)
+				DICT_NFC1[sector] = response
+			name = DICT_NFC1[b"01"]	
+			value = DICT_NFC1[b"05"]	
 
-				if index== 0 and response != None:
-					if DICT_NFC1[sector] == None: #view start...
-						print(DICT_NFC1[b"01"])
-						print(DICT_NFC1[b"05"])
-					DICT_NFC1[sector] = response
-					print("DICT_NFC1 CONNECT")
+			if name != None and value != None:
+				battery(name, int(value))
 
-				else:
-					pass
 		else:
 			dict_init(index)
 		index += 1
@@ -468,10 +473,9 @@ def read2check(cmd, sector):
 	readStr = readData.decode("ascii")
 
 	if cmdStr in readStr:
-		resultData = readStr.replace(cmdStr, "").replace("\r\n", "")
+		resultData = readStr.replace(cmdStr, "").replace("\r\n", "").replace("\r", "").replace("\x00","")
 
 	else:
-		print(readStr)
 		resultData = None
 
 	return resultData
