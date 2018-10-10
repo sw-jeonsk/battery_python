@@ -20,6 +20,7 @@ import serial
 import time
 import logging
 import optparse
+import datetime
 
 LOGGING_LEVELS = {'critical': logging.CRITICAL,
                   'error': logging.ERROR,
@@ -265,19 +266,15 @@ def battery(index, name, value):
 
 	try:
 		logging.info("#########################################")
-		logging.info("INDEX : " + str(index))
-		logging.info("NAME : " + name)
-		logging.info("VALUE : " +str(value))
+		logging.info("[INDEX] " + str(index))
+		logging.info("[NAME] " + name)
+		logging.info("[VALUE] " +str(value))
 
 		TIME = 0
 		bat_bg_index = int(value/10)
 		first_value =	value%10
 		second_value =  int(value/10)
 
-		## BACKGROUND CHANGE...
-		logging.info(int(bat_bg_index))
-		logging.info(int(first_value))
-		logging.info(second_value)
 
 		canvas.itemconfig(BACKGROUND, image=constant.BATTERY[bat_bg_index])
 
@@ -379,7 +376,6 @@ def uart_server():
 		readData = UART.readline()
 		
 		try:
-			logging.info("READ : " + readData.decode("ascii"))
 			#read data is not null,,,,,,
 
 			if len(readData) != 0:
@@ -409,6 +405,7 @@ def uart_server():
 
 
 			else:
+				logging.info("[READ] " + readData.decode("ascii"))
 				dict_init(index)
 			index += 1
 		except TypeError:
@@ -417,15 +414,18 @@ def uart_server():
 def init():
 	
 	global canvas, frame, Thread1
-
+	
+	now = datetime.datetime.now()
+	logFile = "./logs/" + now.strftime("%m%d%H%M_") + "battery.log"
 	parser = optparse.OptionParser()
 	parser.add_option('-l', '--logging-level', help='Logging level')
 	parser.add_option('-f', '--logging-file', help='Logging file name')
 	(options, args) = parser.parse_args()
 	logging_level = LOGGING_LEVELS.get(options.logging_level, logging.NOTSET)
-	logging.basicConfig(level=logging_level, filename=options.logging_file,
+	logging.basicConfig(level=logging_level, filename=logFile,
 						format='%(asctime)s %(levelname)s: %(message)s',
-						datefmt='%Y-%m-%d %H:%M:%S')
+						datefmt='%Y-%m-%d %H:%M:%S',
+						filemode='w')
 
 	root.attributes("-fullscreen", True)
 
