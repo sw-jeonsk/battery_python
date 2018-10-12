@@ -70,6 +70,7 @@ def battery_90():
     readData = ser.readline()
     print("Temp Max : 07")
     print(readData.decode('ascii'))
+
 def battery_60():
 
     ser.write(b'#R,T,00\r\n')
@@ -77,7 +78,7 @@ def battery_60():
     print("Manufacture : 00")
     print(readData.decode('ascii'))
 
-    ser.write(b'#W,01,Wendy\r\n')
+    ser.write(b'#W,01,Jordan\r\n')
     ser.write(b'#R,T,01\r\n')
     readData = ser.readline()
     print("User : 01")
@@ -126,7 +127,7 @@ def battery_10():
     print("Manufacture : 00")
     print(readData.decode('ascii'))
 
-    ser.write(b'#W,01,Jordan\r\n')
+    ser.write(b'#W,01,Sam\r\n')
     ser.write(b'#R,T,01\r\n')
     readData = ser.readline()
     print("User : 01")
@@ -170,7 +171,7 @@ def battery_10():
     print(readData.decode('ascii'))
 
 
-battery_90()
+battery_10()
 
 ser.close()
 GPIO.cleanup()

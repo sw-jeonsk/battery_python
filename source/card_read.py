@@ -22,6 +22,12 @@ GPIO.output(S1, 0)
 ser = serial.Serial("/dev/ttyAMA0", 38400, timeout=1)
 flag = 0
 
+ser.write(b'#R,T\r\n')
+
+readData = ser.readline()
+
+print(readData.decode('ascii'))
+
 
 def battery_90():
     ser.write(b'#R,T,00\r\n')
@@ -163,7 +169,7 @@ def battery_10():
     print(readData.decode('ascii'))
 
 
-battery_90()
+#battery_90()
 
 ser.close()
 GPIO.cleanup()
