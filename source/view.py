@@ -78,7 +78,8 @@ SentanceY	= 773
 NoBatteryX  = 468 + 468/2 + 100
 NoBatteryY  = 431
 run = True
-Thread1 = None
+UART_Thread = None #Data and Charge
+VIEW_Thread = None #View Cycle
 
 BACKGROUND 	= None
 THIRD		= None
@@ -106,7 +107,7 @@ S1_flag = 0
 S2_flag = 0
 S3_flag = 0
 
-#output...
+#output...LED
 CHARGE_EN1 = 18
 CHARGE_EN2 = 23
 CHARGE_EN3 = 24
@@ -118,11 +119,23 @@ DOOR_EN2 = 16
 DOOR_EN3 = 20
 DOOR_EN4 = 21
 
+
 #input...
 SOL_OFF_EN1 = 17
 SOL_OFF_EN2 = 27
 SOL_OFF_EN3 = 22
 SOL_OFF_EN4 = 5
+
+
+#OUTPUT..CHARGE
+VIN1_EN = 6
+VIN2_EN = 13
+VIN3_EN = 19
+VIN4_EN = 26
+
+QC_CH_EN1 = 8
+QC_CH_EN2 = 7
+
 
 ########################################################################################
 
@@ -159,17 +172,19 @@ NAME_FIELD   = PhotoImage(file="image/name_field.png")
 BED_BATTERY = PhotoImage(file="image/bed_battery.png")
 
 
-DICT_NFC0 = {b"01": None, b"02" : None, b"03" : None, b"04" : None, b"05": None, b"06": None, "view" : 0}
-DICT_NFC1 = {b"01": None, b"02" : None, b"03" : None, b"04" : None, b"05": None, b"06": None, "view" : 0}
-DICT_NFC2 = {b"01": None, b"02" : None, b"03" : None, b"04" : None, b"05": None, b"06": None, "view" : 0}
-DICT_NFC3 = {b"01": None, b"02" : None, b"03" : None, b"04" : None, b"05": None, b"06": None, "view" : 0}
-DICT_NFC4 = {b"01": None, b"02" : None, b"03" : None, b"04" : None, b"05": None, b"06": None, "view" : 0}
-DICT_NFC5 = {b"01": None, b"02" : None, b"03" : None, b"04" : None, b"05": None, b"06": None, "view" : 0}
-DICT_NFC6 = {b"01": None, b"02" : None, b"03" : None, b"04" : None, b"05": None, b"06": None, "view" : 0}
-DICT_NFC7 = {b"01": None, b"02" : None, b"03" : None, b"04" : None, b"05": None, b"06": None, "view" : 0}
+DICT_NFC0 = {b"01": None, b"02" : None, b"03" : None, b"04" : None, b"05": None, b"06": None, "view" : 0, "charge" : False}
+DICT_NFC1 = {b"01": None, b"02" : None, b"03" : None, b"04" : None, b"05": None, b"06": None, "view" : 0, "charge" : False}
+DICT_NFC2 = {b"01": None, b"02" : None, b"03" : None, b"04" : None, b"05": None, b"06": None, "view" : 0, "charge" : False}
+DICT_NFC3 = {b"01": None, b"02" : None, b"03" : None, b"04" : None, b"05": None, b"06": None, "view" : 0, "charge" : False}
+DICT_NFC4 = {b"01": None, b"02" : None, b"03" : None, b"04" : None, b"05": None, b"06": None, "view" : 0, "charge" : False}
+DICT_NFC5 = {b"01": None, b"02" : None, b"03" : None, b"04" : None, b"05": None, b"06": None, "view" : 0, "charge" : False}
+DICT_NFC6 = {b"01": None, b"02" : None, b"03" : None, b"04" : None, b"05": None, b"06": None, "view" : 0, "charge" : False}
+DICT_NFC7 = {b"01": None, b"02" : None, b"03" : None, b"04" : None, b"05": None, b"06": None, "view" : 0, "charge" : False}
 
 DICT_ARR = [DICT_NFC0, DICT_NFC1, DICT_NFC2, DICT_NFC3, DICT_NFC4, DICT_NFC5, DICT_NFC6, DICT_NFC7]
 
+
+# weather view...
 def waitView():
 
 	global BACKGROUND, NAMEFIELD, GREET, FIRST, SECOND, THIRD, MARK, SENTENCE, NOBATTERY, NAME
@@ -256,7 +271,7 @@ def quit(*args):
 	global root, run
 	root.destroy()
 	run = False
-	Thread1.join()
+	UART_Thread.join()
 	GPIO.cleanup()
 
 	
@@ -330,6 +345,8 @@ def battery(index, name, value):
 		canvas.coords(FIRST ,Bat_FirstX, Bat_FirstY)
 		canvas.coords(SECOND, Bat_SecondX, Bat_SecondY)
 		canvas.coords(MARK, Bat_MarkX, Bat_MarkY)
+
+		## Thread Start..
 	except ValueError:
 		logging.error("FUNC[battery] Value Error...")
 		parameter = str(index) + ", " + str(name) + "," + str(value)
@@ -353,23 +370,17 @@ def uart_server():
 
 	UART = serial.Serial(USBPORT, BAUDRATE, timeout = UART_TIME)
 
-	GPIO.setmode(GPIO.BCM)
-	GPIO.setup(S1, GPIO.OUT)
-	GPIO.setup(S2, GPIO.OUT)
-	GPIO.setup(S3, GPIO.OUT)
-
 	### First Uart..
 	index = 0
 	while run:
 
-		if index == 3:
+		if index == 4:
 			index = 0
 
 		convert(index)
 		GPIO.output(S1, S1_flag)
 		GPIO.output(S2, S2_flag)
 		GPIO.output(S3, S3_flag)
-
 
 		UART.write(b"#R,T,00\r\n")
 
@@ -392,29 +403,58 @@ def uart_server():
 				name = DICT_ARR[index][b"01"]
 				value = DICT_ARR[index][b"05"]
 
-
-
 				if view == 1 and name != None and value != None:
 					logging.info("NAME : " + name + " VALUE : " + value + " VIEW : " + str(view))
 					battery(index, name, int(value))
 					DICT_ARR[index]["view"] = -1 # view -> wait..
-
+					DICT_ARR[index]["charge"] = True # charge start...
 				elif view == 1 and name == None: # nothing value... is bad view..
 					badView()
 					DICT_ARR[index]["view"] = -1
-
 
 			else:
 				logging.info("[READ] " + readData.decode("ascii"))
 				dict_init(index)
 			index += 1
+
 		except TypeError:
 			logging.error("FUNC[uart_server] TypeError")
-		
+
+def view_server():
+	 pass
 def init():
 	
-	global canvas, frame, Thread1
-	
+	global canvas, frame, UART_Thread
+	##########################GPIO##########################
+	GPIO.setmode(GPIO.BCM)
+	GPIO.setup(S1, GPIO.OUT)
+	GPIO.setup(S2, GPIO.OUT)
+	GPIO.setup(S3, GPIO.OUT)
+
+	GPIO.setup(CHARGE_EN1, GPIO.OUT)
+	GPIO.setup(CHARGE_EN2, GPIO.OUT)
+	GPIO.setup(CHARGE_EN3, GPIO.OUT)
+	GPIO.setup(CHARGE_EN4, GPIO.OUT)
+
+	GPIO.setup(DOOR_EN1, GPIO.OUT)
+	GPIO.setup(DOOR_EN2, GPIO.OUT)
+	GPIO.setup(DOOR_EN3, GPIO.OUT)
+	GPIO.setup(DOOR_EN4, GPIO.OUT)
+
+	GPIO.setup(SOL_OFF_EN1, GPIO.IN)
+	GPIO.setup(SOL_OFF_EN2, GPIO.IN)
+	GPIO.setup(SOL_OFF_EN3, GPIO.IN)
+	GPIO.setup(SOL_OFF_EN4, GPIO.IN)
+
+	GPIO.setup(VIN1_EN, GPIO.OUT)
+	GPIO.setup(VIN2_EN, GPIO.OUT)
+	GPIO.setup(VIN3_EN, GPIO.OUT)
+	GPIO.setup(VIN4_EN, GPIO.OUT)
+
+	GPIO.setup(QC_CH_EN1, GPIO.OUT)
+	GPIO.setup(QC_CH_EN2, GPIO.OUT)
+
+	##########################LOG###########################
 	now = datetime.datetime.now()
 	logFile = "./logs/" + now.strftime("%m%d%H%M_") + "battery.log"
 	parser = optparse.OptionParser()
@@ -426,18 +466,17 @@ def init():
 						format='%(asctime)s %(levelname)s: %(message)s',
 						datefmt='%Y-%m-%d %H:%M:%S',
 						filemode='w')
-
+	########################################################
 	root.attributes("-fullscreen", True)
-
 	root.bind("<Escape>", quit)    
-	root.bind("x", quit) 
-
+	root.bind("x", quit)
 	frame.pack()
+	#########################THREAD#########################
+	UART_Thread = threading.Thread(target=uart_server)
 
-	Thread1 = threading.Thread(target=uart_server)
+	UART_Thread.start()
 
-
-	Thread1.start()
+	########################################################
 	root.after(100, hello_after)
 	root.mainloop()
 
@@ -523,6 +562,7 @@ def dict_init(index):
 	DICT_ARR[index][b"05"] = None 
 	DICT_ARR[index][b"06"] = None 
 	DICT_ARR[index]["view"] = 0  # 0 : default / 1 : view flag / -1 : wait
+	DICT_ARR[index]["charge"] = False
 
 
 
