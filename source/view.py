@@ -31,6 +31,7 @@ LOGGING_LEVELS = {'critical': logging.CRITICAL,
 
 log = logging.getLogger('udp_server')
 
+HOMEDIR 	= "/home/pi/Desktop/github/battery_python/source/"
 
 Width 		= 1280
 Height		= 960
@@ -150,26 +151,26 @@ canvas.pack()
 
 constant.init()
 
-BLUR 		= PhotoImage(file="image/weather_blur.png")
-CLOUD 		= PhotoImage(file="image/weather_cloud.png")
-CLOUDSUN 	= PhotoImage(file="image/weather_cloudsun.png")
-RAIN 		= PhotoImage(file="image/weather_rain.png")
-SUN 		= PhotoImage(file="image/weather_sun.png")
+BLUR 		= PhotoImage(file=HOMEDIR + "image/weather_blur.png")
+CLOUD 		= PhotoImage(file=HOMEDIR + "image/weather_cloud.png")
+CLOUDSUN 	= PhotoImage(file=HOMEDIR + "image/weather_cloudsun.png")
+RAIN 		= PhotoImage(file=HOMEDIR + "image/weather_rain.png")
+SUN 		= PhotoImage(file=HOMEDIR + "image/weather_sun.png")
 
 
-TEMPER_MARK     = PhotoImage(file="image/temper_mark.png")
-PERCENT_MARK    = PhotoImage(file="image/percent_mark.png")
+TEMPER_MARK     = PhotoImage(file=HOMEDIR + "image/temper_mark.png")
+PERCENT_MARK    = PhotoImage(file=HOMEDIR + "image/percent_mark.png")
 
-GOODBYE     = PhotoImage(file="image/text_goodbye.png")
-HELLO       = PhotoImage(file="image/text_hello.png")
-NO_BATTERY  = PhotoImage(file="image/text_no_battery.png")
+GOODBYE     = PhotoImage(file=HOMEDIR + "image/text_goodbye.png")
+HELLO       = PhotoImage(file=HOMEDIR + "image/text_hello.png")
+NO_BATTERY  = PhotoImage(file=HOMEDIR + "image/text_no_battery.png")
 
-POPUP01     = PhotoImage(file="image/text_field_popup01.png")
-POPUP02     = PhotoImage(file="image/text_field_popup02.png")
+POPUP01     = PhotoImage(file=HOMEDIR + "image/text_field_popup01.png")
+POPUP02     = PhotoImage(file=HOMEDIR + "image/text_field_popup02.png")
 
-NAME_FIELD   = PhotoImage(file="image/name_field.png")
+NAME_FIELD   = PhotoImage(file=HOMEDIR + "image/name_field.png")
 
-BED_BATTERY = PhotoImage(file="image/bed_battery.png")
+BED_BATTERY = PhotoImage(file=HOMEDIR + "image/bed_battery.png")
 
 
 DICT_NFC0 = {b"01": None, b"02" : None, b"03" : None, b"04" : None, b"05": None, b"06": None, "view" : 0, "charge" : False}
@@ -456,7 +457,7 @@ def init():
 
 	##########################LOG###########################
 	now = datetime.datetime.now()
-	logFile = "./logs/" + now.strftime("%m%d%H%M_") + "battery.log"
+	logFile =HOMEDIR +  "logs/" + now.strftime("%m%d%H%M_") + "battery.log"
 	parser = optparse.OptionParser()
 	parser.add_option('-l', '--logging-level', help='Logging level')
 	parser.add_option('-f', '--logging-file', help='Logging file name')
