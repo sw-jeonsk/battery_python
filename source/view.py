@@ -1,5 +1,4 @@
 #!/usr/bin/env python3
-
 # import...
 from tkinter import *
 from tkinter import ttk
@@ -79,8 +78,10 @@ SentanceY	= 773
 NoBatteryX  = 468 + 468/2 + 100
 NoBatteryY  = 431
 run = True
-UART_Thread = None #Data and Charge
-VIEW_Thread = None #View Cycle
+UART_Thread 	= None #Data and Charge
+VIEW_Thread 	= None #View Cycle
+LED_Thread  	= None
+CHARGE_Thread  	= None
 
 BACKGROUND 	= None
 THIRD		= None
@@ -96,6 +97,7 @@ UART		= None
 BAUDRATE	= 38400
 
 TIME = 0
+NEXT_VIEW = 5 #seconds
 UART_TIME = 1 
 USBPORT = '/dev/ttyAMA0'
 
@@ -173,11 +175,11 @@ NAME_FIELD   = PhotoImage(file=HOMEDIR + "image/name_field.png")
 BED_BATTERY = PhotoImage(file=HOMEDIR + "image/bed_battery.png")
 
 
-DICT_NFC0 = {b"01": None, b"02" : None, b"03" : None, b"04" : None, b"05": None, b"06": None, "view" : 0, "charge" : False}
-DICT_NFC1 = {b"01": None, b"02" : None, b"03" : None, b"04" : None, b"05": None, b"06": None, "view" : 0, "charge" : False}
-DICT_NFC2 = {b"01": None, b"02" : None, b"03" : None, b"04" : None, b"05": None, b"06": None, "view" : 0, "charge" : False}
-DICT_NFC3 = {b"01": None, b"02" : None, b"03" : None, b"04" : None, b"05": None, b"06": None, "view" : 0, "charge" : False}
-DICT_NFC4 = {b"01": None, b"02" : None, b"03" : None, b"04" : None, b"05": None, b"06": None, "view" : 0, "charge" : False}
+DICT_NFC0 = {b"01": None, b"02" : None, b"03" : None, b"04" : None, b"05": None, b"06": None, "view" : 0, "ch_gpio" : VIN1_EN, "qc_gpio": QC_CH_EN1, "led_gpio" : CHARGE_EN1,  "discon_count" : 0}
+DICT_NFC1 = {b"01": None, b"02" : None, b"03" : None, b"04" : None, b"05": None, b"06": None, "view" : 0, "ch_gpio" : VIN2_EN, "qc_gpio": QC_CH_EN1, "led_gpio" : CHARGE_EN2, "discon_count" : 0}
+DICT_NFC2 = {b"01": None, b"02" : None, b"03" : None, b"04" : None, b"05": None, b"06": None, "view" : 0, "ch_gpio" : VIN3_EN, "qc_gpio": QC_CH_EN2, "led_gpio" : CHARGE_EN3, "discon_count" : 0}
+DICT_NFC3 = {b"01": None, b"02" : None, b"03" : None, b"04" : None, b"05": None, b"06": None, "view" : 0, "ch_gpio" : VIN4_EN, "qc_gpio": QC_CH_EN2, "led_gpio" : CHARGE_EN4,"discon_count" : 0}
+DICT_NFC4 = {b"01": None, b"02" : None, b"03" : None, b"04" : None, b"05": None, b"06": None, "view" : 0, "ch_gpio" : False}
 DICT_NFC5 = {b"01": None, b"02" : None, b"03" : None, b"04" : None, b"05": None, b"06": None, "view" : 0, "charge" : False}
 DICT_NFC6 = {b"01": None, b"02" : None, b"03" : None, b"04" : None, b"05": None, b"06": None, "view" : 0, "charge" : False}
 DICT_NFC7 = {b"01": None, b"02" : None, b"03" : None, b"04" : None, b"05": None, b"06": None, "view" : 0, "charge" : False}
@@ -276,11 +278,15 @@ def quit(*args):
 	GPIO.cleanup()
 
 	
-def battery(index, name, value):
+def battery(index):
 
 	global constant, TIME
 
 	try:
+		#init.>>>>;
+		name = DICT_ARR[index][b"01"]
+		value =int(DICT_ARR[index][b"05"])
+
 		logging.info("#########################################")
 		logging.info("[INDEX] " + str(index))
 		logging.info("[NAME] " + name)
@@ -326,19 +332,16 @@ def battery(index, name, value):
 			canvas.itemconfig(NAME, text=name)
 
 		## CHANGE...
-		if value <= 30:
+		if value < 30:
 			canvas.itemconfig(SECOND, image=constant.RED[second_value])
 			canvas.itemconfig(FIRST, image=constant.RED[first_value])
 
-		elif value <= 55:
+		elif value < 80:
 			canvas.itemconfig(SECOND, image=constant.ORANGE[second_value])
 			canvas.itemconfig(FIRST, image=constant.ORANGE[first_value])
-		elif value <= 75:
+		elif value < 100:
 			canvas.itemconfig(SECOND, image=constant.GREEN[second_value])
 			canvas.itemconfig(FIRST, image=constant.GREEN[first_value])
-		elif value <= 100:
-			canvas.itemconfig(SECOND, image=constant.BLUE[second_value])
-			canvas.itemconfig(FIRST, image=constant.BLUE[first_value])
 
 		canvas.itemconfig(MARK, image=PERCENT_MARK)
 
@@ -360,7 +363,7 @@ def hello_after():
 
 	TIME += 1
 
-	if TIME > 10:
+	if TIME > NEXT_VIEW:
 		waitView()
 		TIME = 0
 	root.after(1000, hello_after)
@@ -397,24 +400,11 @@ def uart_server():
 					response = read2check(b"#R,T,", sector)
 					DICT_ARR[index][sector] = response
 
-				if DICT_ARR[index]["view"] == 0: # default -> view command
-					DICT_ARR[index]["view"] = 1
-
-				view = 	DICT_ARR[index]["view"]
-				name = DICT_ARR[index][b"01"]
-				value = DICT_ARR[index][b"05"]
-
-				if view == 1 and name != None and value != None:
-					logging.info("NAME : " + name + " VALUE : " + value + " VIEW : " + str(view))
-					battery(index, name, int(value))
-					DICT_ARR[index]["view"] = -1 # view -> wait..
-					DICT_ARR[index]["charge"] = True # charge start...
-				elif view == 1 and name == None: # nothing value... is bad view..
-					badView()
-					DICT_ARR[index]["view"] = -1
+				DICT_ARR[index]["view"] = 1
+				DICT_ARR[index]["discon_count"] = 0
 
 			else:
-				logging.info("[READ] " + readData.decode("ascii"))
+				#logging.info("[READ] " + readData.decode("ascii"))
 				dict_init(index)
 			index += 1
 
@@ -422,7 +412,80 @@ def uart_server():
 			logging.error("FUNC[uart_server] TypeError")
 
 def view_server():
-	 pass
+	global DICT_ARR, run
+		
+	while run:
+
+		for index in range(1, 4):
+			view = DICT_ARR[index -1]["view"]
+			name = DICT_ARR[index -1][b"01"]
+			if view == 1: #view UI
+				if name != None:	
+					battery(index-1)
+				else:
+					badView()
+				time.sleep(NEXT_VIEW -1)
+
+		time.sleep(0.5)
+
+def led_server():
+	global DICT_ARR, run
+
+	while run:
+		
+		for index in range(0, 3):
+			name = DICT_ARR[index][b"01"]
+			value = DICT_ARR[index][b"05"]
+			led_gpio = DICT_ARR[index]["led_gpio"]
+
+			if value != None and name != None:
+				led_gpio = DICT_ARR[index]["led_gpio"]
+				
+				if value == "100":
+					GPIO.output(led_gpio, True)
+				else:
+					flag = GPIO.input(led_gpio)
+					GPIO.output(led_gpio, not flag)
+			else:
+				GPIO.output(led_gpio, False)
+
+		time.sleep(1)
+	
+def charge_server():
+	global DICT_ARR, run
+
+	slots = [0,2]
+
+	while run:
+		
+		for index in range(0, 3):
+			name = DICT_ARR[index][b"01"]
+			pin  = DICT_ARR[index]["ch_gpio"]
+
+			if name != None:
+				GPIO.output(pin, True)
+				logging.info("#"+str(index) + " charging...")
+			else:
+				GPIO.output(pin, False)
+
+		for slot in slots:
+			both_connect = DICT_ARR[slot][b"01"] != None and DICT_ARR[slot + 1][b"01"] != None
+			both_disconnect = DICT_ARR[slot][b"01"] == None and DICT_ARR[slot + 1][b"01"] == None
+			
+			if both_connect or both_disconnect:
+				GPIO.output(DICT_ARR[slot]["qc_gpio"], False)
+			else:
+				GPIO.output(DICT_ARR[slot]["qc_gpio"], True)
+				logging.info("#"+str(index) + " quick charging...")
+
+		time.sleep(1)
+		
+
+		  
+
+
+
+
 def init():
 	
 	global canvas, frame, UART_Thread
@@ -468,14 +531,23 @@ def init():
 						datefmt='%Y-%m-%d %H:%M:%S',
 						filemode='w')
 	########################################################
-	root.attributes("-fullscreen", True)
+	#root.attributes("-fullscreen", True)
 	root.bind("<Escape>", quit)    
 	root.bind("x", quit)
 	frame.pack()
 	#########################THREAD#########################
 	UART_Thread = threading.Thread(target=uart_server)
-
 	UART_Thread.start()
+
+
+	VIEW_Thread = threading.Thread(target=view_server)
+	VIEW_Thread.start()
+
+	LED_Thread = threading.Thread(target=led_server)
+	LED_Thread.start()
+
+	CHARGE_Thread = threading.Thread(target=charge_server)
+	CHARGE_Thread.start()
 
 	########################################################
 	root.after(100, hello_after)
@@ -563,7 +635,9 @@ def dict_init(index):
 	DICT_ARR[index][b"05"] = None 
 	DICT_ARR[index][b"06"] = None 
 	DICT_ARR[index]["view"] = 0  # 0 : default / 1 : view flag / -1 : wait
-	DICT_ARR[index]["charge"] = False
+	if DICT_ARR[index]["discon_count"] > 100:
+		DICT_ARR[index]["dicson_count"] = 5
+	DICT_ARR[index]["discon_count"] += 1
 
 
 
