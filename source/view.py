@@ -8,7 +8,7 @@ from enum 	 import Enum
 
 import logging
 import PIL.Image
-import threading
+import threading 
 import socket
 import random
 import tkinter.font
@@ -27,6 +27,8 @@ LOGGING_LEVELS = {'critical': logging.CRITICAL,
                   'info': logging.INFO,
                   'debug': logging.DEBUG}
 ## CONST.............
+
+lock = threading.Lock()
 
 log = logging.getLogger('udp_server')
 
@@ -77,11 +79,15 @@ SentanceY	= 773
 
 NoBatteryX  = 468 + 468/2 + 100
 NoBatteryY  = 431
+
+SlotX		= 50 
+SlotY		= 40 
 run = True
 UART_Thread 	= None #Data and Charge
 VIEW_Thread 	= None #View Cycle
 LED_Thread  	= None
 CHARGE_Thread  	= None
+SOL_Thread		= None
 
 BACKGROUND 	= None
 THIRD		= None
@@ -93,6 +99,8 @@ NAMEFIELD 	= None
 SENTENCE	= None
 NOBATTERY	= None
 NAME		= None
+SLOT		= None
+
 UART		= None
 BAUDRATE	= 38400
 
@@ -175,10 +183,10 @@ NAME_FIELD   = PhotoImage(file=HOMEDIR + "image/name_field.png")
 BED_BATTERY = PhotoImage(file=HOMEDIR + "image/bed_battery.png")
 
 
-DICT_NFC0 = {b"01": None, b"02" : None, b"03" : None, b"04" : None, b"05": None, b"06": None, "view" : 0, "ch_gpio" : VIN1_EN, "qc_gpio": QC_CH_EN1, "led_gpio" : CHARGE_EN1,  "discon_count" : 0}
-DICT_NFC1 = {b"01": None, b"02" : None, b"03" : None, b"04" : None, b"05": None, b"06": None, "view" : 0, "ch_gpio" : VIN2_EN, "qc_gpio": QC_CH_EN1, "led_gpio" : CHARGE_EN2, "discon_count" : 0}
-DICT_NFC2 = {b"01": None, b"02" : None, b"03" : None, b"04" : None, b"05": None, b"06": None, "view" : 0, "ch_gpio" : VIN3_EN, "qc_gpio": QC_CH_EN2, "led_gpio" : CHARGE_EN3, "discon_count" : 0}
-DICT_NFC3 = {b"01": None, b"02" : None, b"03" : None, b"04" : None, b"05": None, b"06": None, "view" : 0, "ch_gpio" : VIN4_EN, "qc_gpio": QC_CH_EN2, "led_gpio" : CHARGE_EN4,"discon_count" : 0}
+DICT_NFC0 = {b"01": None, b"02" : None, b"03" : None, b"04" : None, b"05": None, b"06": None, "view" : 0, "ch_gpio" : VIN1_EN, "qc_gpio": QC_CH_EN1,"qc_enable" : 0,  "led_gpio" : CHARGE_EN1,"sol_gpio" : SOL_OFF_EN1, "door_gpio":DOOR_EN1,  "count" : 0, "discon_count" : 0}
+DICT_NFC1 = {b"01": None, b"02" : None, b"03" : None, b"04" : None, b"05": None, b"06": None, "view" : 0, "ch_gpio" : VIN2_EN, "qc_gpio": QC_CH_EN1,"qc_enable" : 0,  "led_gpio" : CHARGE_EN2,"sol_gpio" : SOL_OFF_EN2,"door_gpio" :DOOR_EN2,"count" : 0, "discon_count" : 0}
+DICT_NFC2 = {b"01": None, b"02" : None, b"03" : None, b"04" : None, b"05": None, b"06": None, "view" : 0, "ch_gpio" : VIN3_EN, "qc_gpio": QC_CH_EN2,"qc_enable" : 0,  "led_gpio" : CHARGE_EN3,"sol_gpio" : SOL_OFF_EN3,"door_gpio":DOOR_EN3, "count" : 0, "discon_count" : 0}
+DICT_NFC3 = {b"01": None, b"02" : None, b"03" : None, b"04" : None, b"05": None, b"06": None, "view" : 0, "ch_gpio" : VIN4_EN, "qc_gpio": QC_CH_EN2,"qc_enable" : 0, "led_gpio" : CHARGE_EN4, "sol_gpio" : SOL_OFF_EN4,"door_gpio":DOOR_EN4, "count" : 0 "disconcount" : 0}
 DICT_NFC4 = {b"01": None, b"02" : None, b"03" : None, b"04" : None, b"05": None, b"06": None, "view" : 0, "ch_gpio" : False}
 DICT_NFC5 = {b"01": None, b"02" : None, b"03" : None, b"04" : None, b"05": None, b"06": None, "view" : 0, "charge" : False}
 DICT_NFC6 = {b"01": None, b"02" : None, b"03" : None, b"04" : None, b"05": None, b"06": None, "view" : 0, "charge" : False}
@@ -190,7 +198,7 @@ DICT_ARR = [DICT_NFC0, DICT_NFC1, DICT_NFC2, DICT_NFC3, DICT_NFC4, DICT_NFC5, DI
 # weather view...
 def waitView():
 
-	global BACKGROUND, NAMEFIELD, GREET, FIRST, SECOND, THIRD, MARK, SENTENCE, NOBATTERY, NAME
+	global BACKGROUND, NAMEFIELD, GREET, FIRST, SECOND, THIRD, MARK, SENTENCE, NOBATTERY, NAME, SLOT
 	index = random.randrange(0, 4)
 
 	Weather = [BLUR, CLOUD, CLOUDSUN, RAIN, SUN]
@@ -209,6 +217,7 @@ def waitView():
 		NOBATTERY	= canvas.create_image(NoBatteryX, NoBatteryY, image=NO_BATTERY)
 		NAME		= canvas.create_text(NameX, NameY, fill="white", font=("Noto Sans Korean", 90),
 						text="Zenny")
+		SLOT		= canvas.create_text(SlotX, SlotY, fill="white", font=("Noto Sans Korean", 60), text="#1")
 
 	## background change..Noto Sans Korean Light  Abcdefghxxklm
 	canvas.itemconfig(BACKGROUND, image=Weather[index])
@@ -235,6 +244,7 @@ def waitView():
 	canvas.itemconfig(GREET, state='hidden')
 	canvas.itemconfig(SENTENCE, state='hidden')
 	canvas.itemconfig(NOBATTERY, state='hidden')
+	canvas.itemconfig(SLOT, state='hidden')
 
 	
 
@@ -259,6 +269,7 @@ def badView():
 	canvas.itemconfig(GREET, state='hidden')
 	canvas.itemconfig(SENTENCE, state='hidden')
 	canvas.itemconfig(NAME, state='hidden')
+	canvas.itemconfig(SLOT, state='hidden')
 
 
 
@@ -328,7 +339,9 @@ def battery(index):
 			canvas.itemconfig(FIRST, state='normal')
 			canvas.itemconfig(MARK, state='normal')
 			canvas.itemconfig(NAME, state='normal')
+			canvas.itemconfig(SLOT, state='normal')
 
+			canvas.itemconfig(SLOT, text="#" + str(index + 1))
 			canvas.itemconfig(NAME, text=name)
 
 		## CHANGE...
@@ -355,6 +368,11 @@ def battery(index):
 		logging.error("FUNC[battery] Value Error...")
 		parameter = str(index) + ", " + str(name) + "," + str(value)
 		logging.error(parameter)
+	except TypeError:
+		logging.error("FUNC[battery] Type Error...")
+		parameter = str(index) + ", " + str(name) + "," + str(value)
+		logging.error(parameter)
+
 
 
 
@@ -378,37 +396,46 @@ def uart_server():
 	index = 0
 	while run:
 
+
 		if index == 4:
 			index = 0
 
+		lock.acquire()
 		convert(index)
+		lock.release()
 		GPIO.output(S1, S1_flag)
 		GPIO.output(S2, S2_flag)
 		GPIO.output(S3, S3_flag)
 
-		UART.write(b"#R,T,00\r\n")
-
-		readData = UART.readline()
 		
 		try:
+			UART.write(b"#R,T,00\r\n")
+
+			readData = UART.readline()
 			#read data is not null,,,,,,
 
 			if len(readData) != 0:
 				sector_arr = [b"01",b"02", b"03", b"04", b"05", b"06"]
+				
 
+				lock.acquire()
 				for sector in sector_arr:
 					response = read2check(b"#R,T,", sector)
 					DICT_ARR[index][sector] = response
 
 				DICT_ARR[index]["view"] = 1
+				DICT_ARR[index]["count"] += 1
 				DICT_ARR[index]["discon_count"] = 0
+
+				lock.release()
 
 			else:
 				#logging.info("[READ] " + readData.decode("ascii"))
 				dict_init(index)
 			index += 1
-
 		except TypeError:
+			logging.error("FUNC[uart_server] TypeError")
+		except serial.serialutil.SerialException:
 			logging.error("FUNC[uart_server] TypeError")
 
 def view_server():
@@ -417,14 +444,19 @@ def view_server():
 	while run:
 
 		for index in range(1, 4):
+			lock.acquire()
+
 			view = DICT_ARR[index -1]["view"]
 			name = DICT_ARR[index -1][b"01"]
+			lock.release()
 			if view == 1: #view UI
 				if name != None:	
+					logging.info("NAME : " + name)
 					battery(index-1)
 				else:
 					badView()
 				time.sleep(NEXT_VIEW -1)
+
 
 		time.sleep(0.5)
 
@@ -434,6 +466,7 @@ def led_server():
 	while run:
 		
 		for index in range(0, 3):
+			lock.acquire()
 			name = DICT_ARR[index][b"01"]
 			value = DICT_ARR[index][b"05"]
 			led_gpio = DICT_ARR[index]["led_gpio"]
@@ -448,25 +481,60 @@ def led_server():
 					GPIO.output(led_gpio, not flag)
 			else:
 				GPIO.output(led_gpio, False)
+			lock.release()
 
 		time.sleep(1)
 	
+
 def charge_server():
 	global DICT_ARR, run
 
-	slots = [0,2]
+	logging.info("charge_server start")
+	
+	slots = [0,1]
 
 	while run:
-		
-		for index in range(0, 3):
-			name = DICT_ARR[index][b"01"]
-			pin  = DICT_ARR[index]["ch_gpio"]
+	
+		for index in range(0, 2):
 
-			if name != None:
-				GPIO.output(pin, True)
+			lock.acquire()	
+
+			name = DICT_ARR[index][b"01"]
+			ch  = DICT_ARR[index]["ch_gpio"]
+			sol  = DICT_ARR[index]["sol_gpio"]
+			door  = DICT_ARR[index]["door_gpio"]
+			value = DICT_ARR[index][b"05"]
+			count = DICT_ARR[index]["count"]
+			discon_count = DICT_ARR[index]["discon_count"]
+
+			lock.release()
+			
+			#TODO
+			if  count > 0  and GPIO.input(sol) == True:
+				logging.info("door open")
+				GPIO.output(door, True)
+
+			if GPIO.input(sol) == False:	
+
+				GPIO.output(ch, True)
 				logging.info("#"+str(index) + " charging...")
+
+				if value == "100": #charge 100%
+					GPIO.output(ch, False)
 			else:
-				GPIO.output(pin, False)
+				GPIO.output(ch, False)
+			
+		
+			if  count > 5 and GPIO.input(sol) == False:
+				time.sleep(1)
+				logging.info("door close")
+				GPIO.output(door, False)
+
+			if discon_count > 10 and GPIO.input(door) == True:
+				GPIO.output(door, False) 
+
+
+			
 
 		for slot in slots:
 			both_connect = DICT_ARR[slot][b"01"] != None and DICT_ARR[slot + 1][b"01"] != None
@@ -477,13 +545,19 @@ def charge_server():
 			else:
 				GPIO.output(DICT_ARR[slot]["qc_gpio"], True)
 				logging.info("#"+str(index) + " quick charging...")
-
-		time.sleep(1)
 		
 
-		  
+		time.sleep(1) 
 
+def sol_server():
 
+	while run:
+
+		if GPIO.input(SOL_OFF_EN1) == False:
+			logging.info("SOL EN1 False")
+		else:
+			logging.info("SOL EN1 True")
+		time.sleep(0.5)
 
 
 def init():
@@ -518,6 +592,11 @@ def init():
 	GPIO.setup(QC_CH_EN1, GPIO.OUT)
 	GPIO.setup(QC_CH_EN2, GPIO.OUT)
 
+	GPIO.output(DOOR_EN1, False)
+	GPIO.output(DOOR_EN2, False)
+	GPIO.output(DOOR_EN3, False)
+	GPIO.output(DOOR_EN4, False)
+
 	##########################LOG###########################
 	now = datetime.datetime.now()
 	logFile =HOMEDIR +  "logs/" + now.strftime("%m%d%H%M_") + "battery.log"
@@ -548,6 +627,9 @@ def init():
 
 	CHARGE_Thread = threading.Thread(target=charge_server)
 	CHARGE_Thread.start()
+
+	#SOL_Thread = threading.Thread(target=sol_server)
+	#SOL_Thread.start()
 
 	########################################################
 	root.after(100, hello_after)
@@ -635,8 +717,10 @@ def dict_init(index):
 	DICT_ARR[index][b"05"] = None 
 	DICT_ARR[index][b"06"] = None 
 	DICT_ARR[index]["view"] = 0  # 0 : default / 1 : view flag / -1 : wait
+	DICT_ARR[index]["count"] = 0
 	if DICT_ARR[index]["discon_count"] > 100:
-		DICT_ARR[index]["dicson_count"] = 5
+		DICT_ARR[index]["discon_count"] = 5
+	DICT_ARR[index]["count"] = 0
 	DICT_ARR[index]["discon_count"] += 1
 
 
