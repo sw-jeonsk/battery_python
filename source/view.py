@@ -56,6 +56,9 @@ Temp_MarkX		=	884 + TMarkSize/2
 Temp_MarkY		=	525 + TMarkSize/2
 
 
+Bat_ThirdX	 	=	436 + NumWidth/2
+Bat_ThirdY		=	431 + NumHeight/2
+
 Bat_SecondX	 	=	536 + NumWidth/2
 Bat_SecondY		=	431 + NumHeight/2
 
@@ -75,7 +78,7 @@ NameX		= 691 + 691/4
 NameY		= 282 + 282/8
 
 SentanceX 	= Width/2
-SentanceY	= 773 
+SentanceY	= 573 
 
 NoBatteryX  = 468 + 468/2 + 100
 NoBatteryY  = 431
@@ -187,12 +190,8 @@ DICT_NFC0 = {b"01": None, b"02" : None, b"03" : None, b"04" : None, b"05": None,
 DICT_NFC1 = {b"01": None, b"02" : None, b"03" : None, b"04" : None, b"05": None, b"06": None, "view" : 0, "ch_gpio" : VIN2_EN, "qc_gpio": QC_CH_EN1,"qc_enable" : 0,  "led_gpio" : CHARGE_EN2,"sol_gpio" : SOL_OFF_EN2,"door_gpio" :DOOR_EN2,"count" : 0, "discon_count" : 0}
 DICT_NFC2 = {b"01": None, b"02" : None, b"03" : None, b"04" : None, b"05": None, b"06": None, "view" : 0, "ch_gpio" : VIN3_EN, "qc_gpio": QC_CH_EN2,"qc_enable" : 0,  "led_gpio" : CHARGE_EN3,"sol_gpio" : SOL_OFF_EN3,"door_gpio":DOOR_EN3, "count" : 0, "discon_count" : 0}
 DICT_NFC3 = {b"01": None, b"02" : None, b"03" : None, b"04" : None, b"05": None, b"06": None, "view" : 0, "ch_gpio" : VIN4_EN, "qc_gpio": QC_CH_EN2,"qc_enable" : 0, "led_gpio" : CHARGE_EN4, "sol_gpio" : SOL_OFF_EN4,"door_gpio":DOOR_EN4, "count" : 0, "discon_count" : 0}
-DICT_NFC4 = {b"01": None, b"02" : None, b"03" : None, b"04" : None, b"05": None, b"06": None, "view" : 0, "ch_gpio" : False}
-DICT_NFC5 = {b"01": None, b"02" : None, b"03" : None, b"04" : None, b"05": None, b"06": None, "view" : 0, "charge" : False}
-DICT_NFC6 = {b"01": None, b"02" : None, b"03" : None, b"04" : None, b"05": None, b"06": None, "view" : 0, "charge" : False}
-DICT_NFC7 = {b"01": None, b"02" : None, b"03" : None, b"04" : None, b"05": None, b"06": None, "view" : 0, "charge" : False}
 
-DICT_ARR = [DICT_NFC0, DICT_NFC1, DICT_NFC2, DICT_NFC3, DICT_NFC4, DICT_NFC5, DICT_NFC6, DICT_NFC7]
+DICT_ARR = [DICT_NFC0, DICT_NFC1, DICT_NFC2, DICT_NFC3]
 
 
 # weather view...
@@ -325,8 +324,8 @@ def battery(index):
 		elif value == 100:
 			canvas.itemconfig(BACKGROUND, image=constant.BATTERY[10])
 			canvas.itemconfig(THIRD, state='normal')
-			canvas.itemconfig(SECOND, image=constant.CHROME[0])
-			canvas.itemconfig(FIRST, image=constant.CHROME[0])
+			canvas.itemconfig(SECOND, image=constant.GREEN[0])
+			canvas.itemconfig(FIRST, image=constant.GREEN[0])
 			canvas.itemconfig(SENTENCE, state='normal')
 			canvas.itemconfig(SENTENCE, image=POPUP01)
 			canvas.itemconfig(MARK, state='normal')
@@ -361,6 +360,7 @@ def battery(index):
 		## LOCATION CHANGE...
 		canvas.coords(FIRST ,Bat_FirstX, Bat_FirstY)
 		canvas.coords(SECOND, Bat_SecondX, Bat_SecondY)
+		canvas.coords(THIRD, Bat_ThirdX, Bat_ThirdY)
 		canvas.coords(MARK, Bat_MarkX, Bat_MarkY)
 
 		## Thread Start..
@@ -613,6 +613,7 @@ def init():
 	root.attributes("-fullscreen", True)
 	root.bind("<Escape>", quit)    
 	root.bind("x", quit)
+	root.bind("b", battery_test)
 	frame.pack()
 	#########################THREAD#########################
 	UART_Thread = threading.Thread(target=uart_server)
@@ -725,6 +726,88 @@ def dict_init(index):
 
 
 
+def battery_test():
+
+	global constant, TIME
+
+	try:
+		#init.>>>>;
+		name = "Jordan" 
+		value = 100
+
+		logging.info("#########################################")
+
+		TIME = 0
+		bat_bg_index = int(value/10)
+		first_value =	value%10
+		second_value =  int(value/10)
+
+
+		canvas.itemconfig(BACKGROUND, image=constant.BATTERY[bat_bg_index])
+
+		## HIDDEN...
+		canvas.itemconfig(NOBATTERY, state='hidden')
+		canvas.itemconfig(SENTENCE, state='hidden')
+
+		if value >= 99:
+			canvas.itemconfig(BACKGROUND, image=constant.BATTERY[10])
+			canvas.itemconfig(SENTENCE, state='normal')
+			canvas.itemconfig(SENTENCE, image=POPUP01)
+			canvas.itemconfig(MARK, state='normal')
+
+
+		elif value == 100:
+			print("100")
+			canvas.itemconfig(BACKGROUND, image=constant.BATTERY[10])
+			canvas.itemconfig(THIRD, state='normal')
+			canvas.itemconfig(SECOND, image=constant.GREEN[0])
+			canvas.itemconfig(FIRST, image=constant.GREEN[0])
+			canvas.itemconfig(SENTENCE, state='normal')
+			canvas.itemconfig(SENTENCE, image=POPUP01)
+			canvas.itemconfig(MARK, state='normal')
+
+		else:
+			## NORMAL...
+			canvas.itemconfig(NAMEFIELD, state="normal")
+			canvas.itemconfig(GREET, state='normal')
+			canvas.itemconfig(SECOND, state="normal")
+			canvas.itemconfig(FIRST, state='normal')
+			canvas.itemconfig(MARK, state='normal')
+			canvas.itemconfig(NAME, state='normal')
+			canvas.itemconfig(SLOT, state='normal')
+
+			canvas.itemconfig(SLOT, text="#" + str(index + 1))
+			canvas.itemconfig(NAME, text=name)
+
+		## CHANGE...
+		if value < 30:
+			canvas.itemconfig(SECOND, image=constant.RED[second_value])
+			canvas.itemconfig(FIRST, image=constant.RED[first_value])
+
+		elif value < 80:
+			canvas.itemconfig(SECOND, image=constant.ORANGE[second_value])
+			canvas.itemconfig(FIRST, image=constant.ORANGE[first_value])
+		elif value < 100:
+			canvas.itemconfig(SECOND, image=constant.GREEN[second_value])
+			canvas.itemconfig(FIRST, image=constant.GREEN[first_value])
+
+		canvas.itemconfig(MARK, image=PERCENT_MARK)
+
+		## LOCATION CHANGE...
+		canvas.coords(FIRST ,Bat_FirstX, Bat_FirstY)
+		canvas.coords(SECOND, Bat_SecondX, Bat_SecondY)
+		canvas.coords(THIRD, Bat_ThirdX, Bat_ThirdY)
+		canvas.coords(MARK, Bat_MarkX, Bat_MarkY)
+
+		## Thread Start..
+	except ValueError:
+		logging.error("FUNC[battery] Value Error...")
+		parameter = str(index) + ", " + str(name) + "," + str(value)
+		logging.error(parameter)
+	except TypeError:
+		logging.error("FUNC[battery] Type Error...")
+		parameter = str(index) + ", " + str(name) + "," + str(value)
 
 waitView()
+battery_test()
 init()
