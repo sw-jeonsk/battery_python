@@ -34,39 +34,39 @@ log = logging.getLogger('udp_server')
 
 HOMEDIR 	= "/home/pi/Desktop/github/battery_python/source/"
 
-Width 		= 1280
-Height		= 960
+Width 		= 1024
+Height		= 768
 
 IntervalX	= 50	
 IntervalY	= 250
-NumWidth	= 199
-NumHeight	= 254
+NumWidth	= 160
+NumHeight	= 204
 TMarkSize	= 83
 
-Temp_ThirdX			=	486 +  NumWidth/2
-Temp_ThirdY			=	625 + NumHeight/2
+Temp_ThirdX			=	385 +  NumWidth/2
+Temp_ThirdY			=	525 + NumHeight/2
 
-Temp_SecondX	 	=	685 + NumWidth/2
-Temp_SecondY		=	625 + NumHeight/2
+Temp_SecondX	 	=	585 + NumWidth/2
+Temp_SecondY		=	525 + NumHeight/2
 
-Temp_FirstX	 	=	884 + NumWidth/2
-Temp_FirstY	 	=	625 + NumHeight/2
+Temp_FirstX	 	=	744 + NumWidth/2
+Temp_FirstY	 	=	525 + NumHeight/2
 
-Temp_MarkX		=	1084 + TMarkSize/2
-Temp_MarkY		=	625 + TMarkSize/2
+Temp_MarkX		=	884 + TMarkSize/2
+Temp_MarkY		=	525 + TMarkSize/2
 
 
-Bat_SecondX	 	=	586 + NumWidth/2
+Bat_SecondX	 	=	536 + NumWidth/2
 Bat_SecondY		=	431 + NumHeight/2
 
-Bat_FirstX	 	=	785 + NumWidth/2
+Bat_FirstX	 	=	685 + NumWidth/2
 Bat_FirstY	 	=	431 + NumHeight/2
 
-Bat_MarkX		=	984 + TMarkSize/2
-Bat_MarkY		=	542 + TMarkSize/2
+Bat_MarkX		=	854 + TMarkSize/2
+Bat_MarkY		=	502 + TMarkSize/2
 
-BarX		= 406
-BarY 		= 258
+BarX		= 250
+BarY 		= 300
 
 GreetX		= 406 + 406/2
 GreetY		= 168 + 168/3
@@ -186,7 +186,7 @@ BED_BATTERY = PhotoImage(file=HOMEDIR + "image/bed_battery.png")
 DICT_NFC0 = {b"01": None, b"02" : None, b"03" : None, b"04" : None, b"05": None, b"06": None, "view" : 0, "ch_gpio" : VIN1_EN, "qc_gpio": QC_CH_EN1,"qc_enable" : 0,  "led_gpio" : CHARGE_EN1,"sol_gpio" : SOL_OFF_EN1, "door_gpio":DOOR_EN1,  "count" : 0, "discon_count" : 0}
 DICT_NFC1 = {b"01": None, b"02" : None, b"03" : None, b"04" : None, b"05": None, b"06": None, "view" : 0, "ch_gpio" : VIN2_EN, "qc_gpio": QC_CH_EN1,"qc_enable" : 0,  "led_gpio" : CHARGE_EN2,"sol_gpio" : SOL_OFF_EN2,"door_gpio" :DOOR_EN2,"count" : 0, "discon_count" : 0}
 DICT_NFC2 = {b"01": None, b"02" : None, b"03" : None, b"04" : None, b"05": None, b"06": None, "view" : 0, "ch_gpio" : VIN3_EN, "qc_gpio": QC_CH_EN2,"qc_enable" : 0,  "led_gpio" : CHARGE_EN3,"sol_gpio" : SOL_OFF_EN3,"door_gpio":DOOR_EN3, "count" : 0, "discon_count" : 0}
-DICT_NFC3 = {b"01": None, b"02" : None, b"03" : None, b"04" : None, b"05": None, b"06": None, "view" : 0, "ch_gpio" : VIN4_EN, "qc_gpio": QC_CH_EN2,"qc_enable" : 0, "led_gpio" : CHARGE_EN4, "sol_gpio" : SOL_OFF_EN4,"door_gpio":DOOR_EN4, "count" : 0 "disconcount" : 0}
+DICT_NFC3 = {b"01": None, b"02" : None, b"03" : None, b"04" : None, b"05": None, b"06": None, "view" : 0, "ch_gpio" : VIN4_EN, "qc_gpio": QC_CH_EN2,"qc_enable" : 0, "led_gpio" : CHARGE_EN4, "sol_gpio" : SOL_OFF_EN4,"door_gpio":DOOR_EN4, "count" : 0, "discon_count" : 0}
 DICT_NFC4 = {b"01": None, b"02" : None, b"03" : None, b"04" : None, b"05": None, b"06": None, "view" : 0, "ch_gpio" : False}
 DICT_NFC5 = {b"01": None, b"02" : None, b"03" : None, b"04" : None, b"05": None, b"06": None, "view" : 0, "charge" : False}
 DICT_NFC6 = {b"01": None, b"02" : None, b"03" : None, b"04" : None, b"05": None, b"06": None, "view" : 0, "charge" : False}
@@ -610,7 +610,7 @@ def init():
 						datefmt='%Y-%m-%d %H:%M:%S',
 						filemode='w')
 	########################################################
-	#root.attributes("-fullscreen", True)
+	root.attributes("-fullscreen", True)
 	root.bind("<Escape>", quit)    
 	root.bind("x", quit)
 	frame.pack()
