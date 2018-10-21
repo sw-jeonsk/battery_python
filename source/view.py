@@ -68,8 +68,8 @@ Bat_FirstY	 	=	431 + NumHeight/2
 Bat_MarkX		=	854 + TMarkSize/2
 Bat_MarkY		=	502 + TMarkSize/2
 
-BarX		= 250
-BarY 		= 300
+BarX		= 150
+BarY 		= 350
 
 GreetX		= 406 + 406/2
 GreetY		= 168 + 168/3
@@ -77,8 +77,8 @@ GreetY		= 168 + 168/3
 NameX		= 691 + 691/4
 NameY		= 282 + 282/8
 
-SentanceX 	= Width/2
-SentanceY	= 573 
+SentanceX 	= Width/2 #안전운전하세요.
+SentanceY	= 613 
 
 NoBatteryX  = 468 + 468/2 + 100
 NoBatteryY  = 431
@@ -204,7 +204,7 @@ def waitView():
 
 	if BACKGROUND == None:
 		BACKGROUND 	= canvas.create_image( 1, 0, image=Weather[index], anchor=NW)
-		THIRD		= canvas.create_image(Temp_ThirdX, Temp_ThirdY, image= constant.CHROME[1])
+		THIRD		= canvas.create_image(Temp_ThirdX, Temp_ThirdY, image= constant.GREEN[1])
 		SECOND 		= canvas.create_image(Temp_SecondX, Temp_SecondY, image=constant.CHROME[2])
 		FIRST  		= canvas.create_image(Temp_FirstX, Temp_FirstY, image=constant.CHROME[5])
 		MARK   		= canvas.create_image(Temp_MarkX, Temp_MarkY, image=TEMPER_MARK)
@@ -303,12 +303,14 @@ def battery(index):
 		logging.info("[VALUE] " +str(value))
 
 		TIME = 0
-		bat_bg_index = int(value/10)
-		first_value =	value%10
-		second_value =  int(value/10)
+
+		if value != 0:
+			bat_bg_index = int(value/10)
+			first_value =	value%10
+			second_value =  int(value/10)
 
 
-		canvas.itemconfig(BACKGROUND, image=constant.BATTERY[bat_bg_index])
+			canvas.itemconfig(BACKGROUND, image=constant.BATTERY[bat_bg_index])
 
 		## HIDDEN...
 		canvas.itemconfig(NOBATTERY, state='hidden')
@@ -321,7 +323,7 @@ def battery(index):
 			canvas.itemconfig(MARK, state='normal')
 
 
-		elif value == 100:
+		if value == 100:
 			canvas.itemconfig(BACKGROUND, image=constant.BATTERY[10])
 			canvas.itemconfig(THIRD, state='normal')
 			canvas.itemconfig(SECOND, image=constant.GREEN[0])
@@ -329,6 +331,9 @@ def battery(index):
 			canvas.itemconfig(SENTENCE, state='normal')
 			canvas.itemconfig(SENTENCE, image=POPUP01)
 			canvas.itemconfig(MARK, state='normal')
+
+		elif value == 0:
+			pass
 
 		else:
 			## NORMAL...
@@ -726,24 +731,26 @@ def dict_init(index):
 
 
 
-def battery_test():
+def battery_test(value):
 
 	global constant, TIME
 
 	try:
 		#init.>>>>;
 		name = "Jordan" 
-		value = 100
 
 		logging.info("#########################################")
 
 		TIME = 0
-		bat_bg_index = int(value/10)
-		first_value =	value%10
-		second_value =  int(value/10)
+		if value != 0:
+			bat_bg_index = int(value/10)
+			first_value =	value%10
+			second_value =  int(value/10)
 
+			canvas.itemconfig(BACKGROUND, image=constant.BATTERY[bat_bg_index])
 
-		canvas.itemconfig(BACKGROUND, image=constant.BATTERY[bat_bg_index])
+		else:
+			canvas.itemconfig(BACKGROUND, image=constant.BATTERY[0])
 
 		## HIDDEN...
 		canvas.itemconfig(NOBATTERY, state='hidden')
@@ -756,8 +763,8 @@ def battery_test():
 			canvas.itemconfig(MARK, state='normal')
 
 
-		elif value == 100:
-			print("100")
+		if value == 100:
+
 			canvas.itemconfig(BACKGROUND, image=constant.BATTERY[10])
 			canvas.itemconfig(THIRD, state='normal')
 			canvas.itemconfig(SECOND, image=constant.GREEN[0])
@@ -765,6 +772,18 @@ def battery_test():
 			canvas.itemconfig(SENTENCE, state='normal')
 			canvas.itemconfig(SENTENCE, image=POPUP01)
 			canvas.itemconfig(MARK, state='normal')
+
+		elif value == 0:
+
+			#normal
+			canvas.itemconfig(NAMEFIELD, state="normal")
+			canvas.itemconfig(GREET, state='normal')
+			canvas.itemconfig(SECOND, state="normal")
+			canvas.itemconfig(MARK, state='normal')
+
+			#hidden
+			canvas.itemconfig(FIRST, state='hidden')
+			
 
 		else:
 			## NORMAL...
@@ -776,7 +795,7 @@ def battery_test():
 			canvas.itemconfig(NAME, state='normal')
 			canvas.itemconfig(SLOT, state='normal')
 
-			canvas.itemconfig(SLOT, text="#" + str(index + 1))
+			canvas.itemconfig(SLOT, text="#" + str(1))
 			canvas.itemconfig(NAME, text=name)
 
 		## CHANGE...
@@ -809,5 +828,8 @@ def battery_test():
 		parameter = str(index) + ", " + str(name) + "," + str(value)
 
 waitView()
-battery_test()
 init()
+for i in range(0, 100):
+	print("index : " + str(i))
+	battery_test(i)
+	time.sleep(1)
