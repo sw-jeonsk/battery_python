@@ -68,8 +68,8 @@ Bat_FirstY	 	=	431 + NumHeight/2
 Bat_MarkX		=	854 + TMarkSize/2
 Bat_MarkY		=	502 + TMarkSize/2
 
-BarX		= 150
-BarY 		= 350
+BarX		= 250
+BarY 		= 300
 
 GreetX		= 406 + 406/2
 GreetY		= 168 + 168/3
@@ -519,7 +519,7 @@ def charge_server():
 				logging.info("door open")
 				GPIO.output(door, True)
 
-			if GPIO.input(sol) == False:	
+			if name!= None and  GPIO.input(sol) == False:	
 
 				GPIO.output(ch, True)
 				logging.info("#"+str(index) + " charging...")
@@ -736,7 +736,6 @@ def battery_test(value):
 	global constant, TIME
 
 	try:
-		#init.>>>>;
 		name = "Jordan" 
 
 		logging.info("#########################################")
@@ -795,11 +794,12 @@ def battery_test(value):
 			canvas.itemconfig(NAME, state='normal')
 			canvas.itemconfig(SLOT, state='normal')
 
-			canvas.itemconfig(SLOT, text="#" + str(1))
-			canvas.itemconfig(NAME, text=name)
 
 		## CHANGE...
-		if value < 30:
+		if value == 0:
+			canvas.itemconfig(SECOND, image=constant.RED[value])
+
+		elif value < 30:
 			canvas.itemconfig(SECOND, image=constant.RED[second_value])
 			canvas.itemconfig(FIRST, image=constant.RED[first_value])
 
@@ -809,8 +809,11 @@ def battery_test(value):
 		elif value < 100:
 			canvas.itemconfig(SECOND, image=constant.GREEN[second_value])
 			canvas.itemconfig(FIRST, image=constant.GREEN[first_value])
-
+		
+		#COMMON...
 		canvas.itemconfig(MARK, image=PERCENT_MARK)
+		canvas.itemconfig(SLOT, text="#" + str(1))
+		canvas.itemconfig(NAME, text=name)
 
 		## LOCATION CHANGE...
 		canvas.coords(FIRST ,Bat_FirstX, Bat_FirstY)
@@ -828,8 +831,5 @@ def battery_test(value):
 		parameter = str(index) + ", " + str(name) + "," + str(value)
 
 waitView()
+battery_test(0)
 init()
-for i in range(0, 100):
-	print("index : " + str(i))
-	battery_test(i)
-	time.sleep(1)
