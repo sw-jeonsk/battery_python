@@ -2,17 +2,64 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="9d747407-b15a-49b6-ac27-cc7934eecc37" name="Default Changelist" comment="">
-      <change beforePath="$PROJECT_DIR$/source/image/battery_0.png" beforeDir="false" afterPath="$PROJECT_DIR$/source/image/battery_0.png" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/source/image/battery_10.png" beforeDir="false" afterPath="$PROJECT_DIR$/source/image/battery_10.png" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/source/image/battery_100.png" beforeDir="false" afterPath="$PROJECT_DIR$/source/image/battery_100.png" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/source/image/battery_20.png" beforeDir="false" afterPath="$PROJECT_DIR$/source/image/battery_20.png" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/source/image/battery_30.png" beforeDir="false" afterPath="$PROJECT_DIR$/source/image/battery_30.png" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/source/image/battery_40.png" beforeDir="false" afterPath="$PROJECT_DIR$/source/image/battery_40.png" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/source/image/battery_60.png" beforeDir="false" afterPath="$PROJECT_DIR$/source/image/battery_60.png" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/source/image/battery_70.png" beforeDir="false" afterPath="$PROJECT_DIR$/source/image/battery_70.png" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/source/image/battery_80.png" beforeDir="false" afterPath="$PROJECT_DIR$/source/image/battery_80.png" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/source/image/battery_90.png" beforeDir="false" afterPath="$PROJECT_DIR$/source/image/battery_90.png" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/source/view.py" beforeDir="false" afterPath="$PROJECT_DIR$/source/view.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/source/GUI.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/source/battery.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/source/main.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/source/card_read.py" beforeDir="false" afterPath="$PROJECT_DIR$/source/examples/card_read.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/source/card_write.py" beforeDir="false" afterPath="$PROJECT_DIR$/source/examples/card_write.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/source/image/battery.zip" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/source/image/number/blue_00.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/source/image/number/blue_01.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/source/image/number/blue_02.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/source/image/number/blue_03.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/source/image/number/blue_04.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/source/image/number/blue_05.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/source/image/number/blue_06.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/source/image/number/blue_07.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/source/image/number/blue_08.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/source/image/number/blue_09.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/source/image/number/chrome_00.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/source/image/number/chrome_01.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/source/image/number/chrome_02.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/source/image/number/chrome_03.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/source/image/number/chrome_04.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/source/image/number/chrome_05.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/source/image/number/chrome_06.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/source/image/number/chrome_07.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/source/image/number/chrome_08.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/source/image/number/chrome_09.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/source/image/number/desktop.ini" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/source/image/number/green_00.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/source/image/number/green_01.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/source/image/number/green_02.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/source/image/number/green_03.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/source/image/number/green_04.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/source/image/number/green_05.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/source/image/number/green_06.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/source/image/number/green_07.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/source/image/number/green_08.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/source/image/number/green_09.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/source/image/number/orange_00.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/source/image/number/orange_01.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/source/image/number/orange_02.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/source/image/number/orange_03.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/source/image/number/orange_04.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/source/image/number/orange_05.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/source/image/number/orange_06.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/source/image/number/orange_07.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/source/image/number/orange_08.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/source/image/number/orange_09.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/source/image/number/red_00.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/source/image/number/red_01.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/source/image/number/red_02.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/source/image/number/red_03.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/source/image/number/red_04.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/source/image/number/red_05.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/source/image/number/red_06.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/source/image/number/red_07.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/source/image/number/red_08.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/source/image/number/red_09.png" beforeDir="false" />
     </list>
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
     <option name="SHOW_DIALOG" value="false" />
@@ -24,71 +71,88 @@
     <session id="-2035273739">
       <usages-collector id="statistics.lifecycle.project">
         <counts>
-          <entry key="project.closed" value="2" />
-          <entry key="project.open.time.0" value="2" />
-          <entry key="project.opened" value="2" />
+          <entry key="project.closed" value="4" />
+          <entry key="project.open.time.0" value="3" />
+          <entry key="project.open.time.1" value="1" />
+          <entry key="project.open.time.6" value="1" />
+          <entry key="project.open.time.7" value="1" />
+          <entry key="project.opened" value="6" />
         </counts>
       </usages-collector>
       <usages-collector id="statistics.file.extensions.edit">
         <counts>
-          <entry key="py" value="30" />
+          <entry key="py" value="3688" />
           <entry key="txt" value="14" />
         </counts>
       </usages-collector>
       <usages-collector id="statistics.file.types.edit">
         <counts>
           <entry key="PLAIN_TEXT" value="14" />
-          <entry key="Python" value="30" />
+          <entry key="Python" value="3688" />
         </counts>
       </usages-collector>
       <usages-collector id="statistics.file.extensions.open">
         <counts>
           <entry key="png" value="13" />
-          <entry key="py" value="2" />
+          <entry key="py" value="9" />
         </counts>
       </usages-collector>
       <usages-collector id="statistics.file.types.open">
         <counts>
           <entry key="Image" value="13" />
-          <entry key="Python" value="2" />
+          <entry key="Python" value="9" />
         </counts>
       </usages-collector>
     </session>
   </component>
   <component name="FileEditorManager">
-    <leaf>
+    <leaf SIDE_TABS_SIZE_LIMIT_KEY="300">
       <file pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/source/image/battery_100.png">
-          <provider selected="true" editor-type-id="images" />
+        <entry file="file://$PROJECT_DIR$/source/view.py">
+          <provider selected="true" editor-type-id="text-editor" />
+        </entry>
+      </file>
+      <file pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/source/main.py">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="304">
+              <caret line="34" selection-start-line="34" selection-end-line="34" />
+              <folding>
+                <element signature="e#0#21#0" expanded="true" />
+                <marker date="1540351218880" expanded="true" signature="321:568" ph="..." />
+                <marker date="1540351218880" expanded="true" signature="894:949" ph="..." />
+              </folding>
+            </state>
+          </provider>
         </entry>
       </file>
       <file pinned="false" current-in-tab="true">
-        <entry file="file://$PROJECT_DIR$/source/view.py">
+        <entry file="file://$PROJECT_DIR$/source/GUI.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="9975">
-              <caret line="544" lean-forward="true" selection-start-line="544" selection-end-line="544" />
+            <state relative-caret-position="435">
+              <caret line="44" column="44" selection-start-line="44" selection-start-column="44" selection-end-line="44" selection-end-column="44" />
               <folding>
-                <element signature="e#14362#16588#0" />
-                <element signature="e#16650#17141#0" />
-                <element signature="e#17165#17683#0" />
+                <element signature="e#0#21#0" expanded="true" />
+                <marker date="1540352835611" expanded="true" signature="112:117" ph="..." />
+                <marker date="1540352835611" expanded="true" signature="742:782" ph="..." />
+                <marker date="1540352835611" expanded="true" signature="849:974" ph="..." />
+                <marker date="1540352835611" expanded="true" signature="1599:1604" ph="..." />
               </folding>
             </state>
           </provider>
         </entry>
       </file>
       <file pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/source/image/battery_30.png">
-          <provider selected="true" editor-type-id="images" />
-        </entry>
-      </file>
-      <file pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/source/image/battery_40.png">
-          <provider selected="true" editor-type-id="images" />
-        </entry>
-      </file>
-      <file pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/source/image/battery_20.png">
-          <provider selected="true" editor-type-id="images" />
+        <entry file="file://$PROJECT_DIR$/source/battery.py">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="114">
+              <caret line="6" selection-start-line="6" selection-end-line="9" selection-end-column="32" />
+              <folding>
+                <marker date="1540348751416" expanded="true" signature="18:23" ph="..." />
+                <marker date="1540348751416" expanded="true" signature="268:273" ph="..." />
+              </folding>
+            </state>
+          </provider>
         </entry>
       </file>
       <file pinned="false" current-in-tab="false">
@@ -118,6 +182,13 @@
       </file>
     </leaf>
   </component>
+  <component name="FileTemplateManagerImpl">
+    <option name="RECENT_TEMPLATES">
+      <list>
+        <option value="Python Script" />
+      </list>
+    </option>
+  </component>
   <component name="Git.Settings">
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
   </component>
@@ -125,6 +196,11 @@
     <option name="CHANGED_PATHS">
       <list>
         <option value="$PROJECT_DIR$/source/view.py" />
+        <option value="$PROJECT_DIR$/main.py" />
+        <option value="$PROJECT_DIR$/source/batView.py" />
+        <option value="$PROJECT_DIR$/source/battery.py" />
+        <option value="$PROJECT_DIR$/source/main.py" />
+        <option value="$PROJECT_DIR$/source/GUI.py" />
       </list>
     </option>
   </component>
@@ -133,6 +209,9 @@
     <option name="y" value="-8" />
     <option name="width" value="1936" />
     <option name="height" value="1056" />
+  </component>
+  <component name="ProjectLevelVcsManager">
+    <ConfirmationsSetting value="2" id="Add" />
   </component>
   <component name="ProjectView">
     <navigator proportions="" version="1">
@@ -167,6 +246,12 @@
   <component name="PropertiesComponent">
     <property name="last_opened_file_path" value="$PROJECT_DIR$" />
   </component>
+  <component name="RecentsManager">
+    <key name="MoveFile.RECENT_KEYS">
+      <recent name="C:\Users\seokyu\Desktop\github\battery_python\source\examples" />
+      <recent name="C:\Users\seokyu\Desktop\github\battery_python\source" />
+    </key>
+  </component>
   <component name="RunDashboard">
     <option name="ruleStates">
       <list>
@@ -178,6 +263,34 @@
         </RuleState>
       </list>
     </option>
+  </component>
+  <component name="RunManager">
+    <configuration name="main" type="PythonConfigurationType" factoryName="Python" temporary="true">
+      <module name="battery_python" />
+      <option name="INTERPRETER_OPTIONS" value="" />
+      <option name="PARENT_ENVS" value="true" />
+      <envs>
+        <env name="PYTHONUNBUFFERED" value="1" />
+      </envs>
+      <option name="SDK_HOME" value="" />
+      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/source" />
+      <option name="IS_MODULE_SDK" value="true" />
+      <option name="ADD_CONTENT_ROOTS" value="true" />
+      <option name="ADD_SOURCE_ROOTS" value="true" />
+      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/source/main.py" />
+      <option name="PARAMETERS" value="" />
+      <option name="SHOW_COMMAND_LINE" value="false" />
+      <option name="EMULATE_TERMINAL" value="false" />
+      <option name="MODULE_MODE" value="false" />
+      <option name="REDIRECT_INPUT" value="false" />
+      <option name="INPUT_FILE" value="" />
+      <method v="2" />
+    </configuration>
+    <recent_temporary>
+      <list>
+        <item itemvalue="Python.main" />
+      </list>
+    </recent_temporary>
   </component>
   <component name="SvnConfiguration">
     <configuration />
@@ -218,17 +331,17 @@
     <frame x="3192" y="-8" width="1936" height="1056" extended-state="6" />
     <editor active="true" />
     <layout>
-      <window_info active="true" content_ui="combo" id="Project" order="0" visible="true" weight="0.20758693" />
+      <window_info content_ui="combo" id="Project" order="0" weight="0.09799789" />
       <window_info id="Structure" order="1" side_tool="true" weight="0.25" />
       <window_info id="Favorites" order="2" side_tool="true" />
       <window_info anchor="bottom" id="Message" order="0" />
       <window_info anchor="bottom" id="Find" order="1" />
-      <window_info anchor="bottom" id="Run" order="2" />
+      <window_info active="true" anchor="bottom" id="Run" order="2" visible="true" weight="0.32899022" />
       <window_info anchor="bottom" id="Debug" order="3" weight="0.4" />
       <window_info anchor="bottom" id="Cvs" order="4" weight="0.25" />
       <window_info anchor="bottom" id="Inspection" order="5" weight="0.4" />
       <window_info anchor="bottom" id="TODO" order="6" />
-      <window_info anchor="bottom" id="Version Control" order="7" />
+      <window_info anchor="bottom" id="Version Control" order="7" weight="0.07600434" />
       <window_info anchor="bottom" id="Terminal" order="8" />
       <window_info anchor="bottom" id="Event Log" order="9" side_tool="true" />
       <window_info anchor="bottom" id="Python Console" order="10" />
@@ -236,6 +349,25 @@
       <window_info anchor="right" id="Ant Build" order="1" weight="0.25" />
       <window_info anchor="right" content_ui="combo" id="Hierarchy" order="2" weight="0.25" />
     </layout>
+    <layout-to-restore>
+      <window_info active="true" content_ui="combo" id="Project" order="0" visible="true" weight="0.09799789" />
+      <window_info id="Structure" order="1" side_tool="true" weight="0.25" />
+      <window_info id="Favorites" order="2" side_tool="true" />
+      <window_info anchor="bottom" id="Message" order="0" />
+      <window_info anchor="bottom" id="Find" order="1" />
+      <window_info anchor="bottom" id="Run" order="2" visible="true" weight="0.32899022" />
+      <window_info anchor="bottom" id="Debug" order="3" weight="0.4" />
+      <window_info anchor="bottom" id="Cvs" order="4" weight="0.25" />
+      <window_info anchor="bottom" id="Inspection" order="5" weight="0.4" />
+      <window_info anchor="bottom" id="TODO" order="6" />
+      <window_info anchor="bottom" id="Version Control" order="7" weight="0.07600434" />
+      <window_info anchor="bottom" id="Terminal" order="8" />
+      <window_info anchor="bottom" id="Event Log" order="9" side_tool="true" />
+      <window_info anchor="bottom" id="Python Console" order="10" />
+      <window_info anchor="right" id="Commander" internal_type="SLIDING" order="0" type="SLIDING" weight="0.4" />
+      <window_info anchor="right" id="Ant Build" order="1" weight="0.25" />
+      <window_info anchor="right" content_ui="combo" id="Hierarchy" order="2" weight="0.25" />
+    </layout-to-restore>
   </component>
   <component name="VcsContentAnnotationSettings">
     <option name="myLimit" value="2678400000" />
@@ -259,10 +391,7 @@
     <entry file="file://$PROJECT_DIR$/source/image/battery_70.png">
       <provider selected="true" editor-type-id="images" />
     </entry>
-    <entry file="file://$PROJECT_DIR$/source/image/battery_80.png">
-      <provider selected="true" editor-type-id="images" />
-    </entry>
-    <entry file="file://$PROJECT_DIR$/source/image/battery_90.png">
+    <entry file="file://$PROJECT_DIR$/source/image/battery_100.png">
       <provider selected="true" editor-type-id="images" />
     </entry>
     <entry file="file://$PROJECT_DIR$/source/image/battery_30.png">
@@ -283,17 +412,62 @@
     <entry file="file://$PROJECT_DIR$/source/image/name_field.png">
       <provider selected="true" editor-type-id="images" />
     </entry>
-    <entry file="file://$PROJECT_DIR$/source/image/battery_100.png">
+    <entry file="file://$PROJECT_DIR$/source/image/battery_80.png">
       <provider selected="true" editor-type-id="images" />
     </entry>
-    <entry file="file://$PROJECT_DIR$/source/view.py">
+    <entry file="file://$PROJECT_DIR$/source/image/battery_90.png">
+      <provider selected="true" editor-type-id="images" />
+    </entry>
+    <entry file="file://$PROJECT_DIR$/source/batView.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="9975">
-          <caret line="544" lean-forward="true" selection-start-line="544" selection-end-line="544" />
+        <state relative-caret-position="38">
+          <caret line="2" column="13" selection-start-line="2" selection-start-column="13" selection-end-line="2" selection-end-column="13" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/source/view.py">
+      <provider selected="true" editor-type-id="text-editor" />
+    </entry>
+    <entry file="file://$USER_HOME$/AppData/Local/Programs/Python/Python37/Lib/tkinter/__init__.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="197">
+          <caret line="745" selection-start-line="745" selection-end-line="745" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/source/battery.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="114">
+          <caret line="6" selection-start-line="6" selection-end-line="9" selection-end-column="32" />
           <folding>
-            <element signature="e#14362#16588#0" />
-            <element signature="e#16650#17141#0" />
-            <element signature="e#17165#17683#0" />
+            <marker date="1540348751416" expanded="true" signature="18:23" ph="..." />
+            <marker date="1540348751416" expanded="true" signature="268:273" ph="..." />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/source/main.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="304">
+          <caret line="34" selection-start-line="34" selection-end-line="34" />
+          <folding>
+            <element signature="e#0#21#0" expanded="true" />
+            <marker date="1540351218880" expanded="true" signature="321:568" ph="..." />
+            <marker date="1540351218880" expanded="true" signature="894:949" ph="..." />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/source/GUI.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="435">
+          <caret line="44" column="44" selection-start-line="44" selection-start-column="44" selection-end-line="44" selection-end-column="44" />
+          <folding>
+            <element signature="e#0#21#0" expanded="true" />
+            <marker date="1540352835611" expanded="true" signature="112:117" ph="..." />
+            <marker date="1540352835611" expanded="true" signature="742:782" ph="..." />
+            <marker date="1540352835611" expanded="true" signature="849:974" ph="..." />
+            <marker date="1540352835611" expanded="true" signature="1599:1604" ph="..." />
           </folding>
         </state>
       </provider>
