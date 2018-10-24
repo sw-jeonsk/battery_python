@@ -56,26 +56,26 @@ Temp_MarkX		=	884 + TMarkSize/2
 Temp_MarkY		=	525 + TMarkSize/2
 
 
-Bat_ThirdX	 	=	436 + NumWidth/2
-Bat_ThirdY		=	431 + NumHeight/2
+Bat_ThirdX	 	=	400
+Bat_ThirdY		=	400
 
-Bat_SecondX	 	=	536 + NumWidth/2
-Bat_SecondY		=	431 + NumHeight/2
+Bat_SecondX	 	=	550
+Bat_SecondY		=	400
 
-Bat_FirstX	 	=	685 + NumWidth/2
-Bat_FirstY	 	=	431 + NumHeight/2
+Bat_FirstX	 	=	700
+Bat_FirstY	 	=	400
 
-Bat_MarkX		=	854 + TMarkSize/2
-Bat_MarkY		=	502 + TMarkSize/2
+Bat_MarkX		=	850
+Bat_MarkY		=	480
 
-BarX		= 250
-BarY 		= 300
+BarX		= 330
+BarY 		= 250
 
-GreetX		= 406 + 406/2
-GreetY		= 168 + 168/3
+GreetX		= 330
+GreetY		= 150
 
-NameX		= 691 + 691/4
-NameY		= 282 + 282/8
+NameX		= 500
+NameY		= 250
 
 SentanceX 	= Width/2 #안전운전하세요.
 SentanceY	= 613 
@@ -204,19 +204,19 @@ def waitView():
 
 	if BACKGROUND == None:
 		BACKGROUND 	= canvas.create_image( 1, 0, image=Weather[index], anchor=NW)
-		THIRD		= canvas.create_image(Temp_ThirdX, Temp_ThirdY, image= constant.GREEN[1])
-		SECOND 		= canvas.create_image(Temp_SecondX, Temp_SecondY, image=constant.CHROME[2])
-		FIRST  		= canvas.create_image(Temp_FirstX, Temp_FirstY, image=constant.CHROME[5])
-		MARK   		= canvas.create_image(Temp_MarkX, Temp_MarkY, image=TEMPER_MARK)
+		THIRD		= canvas.create_image(Temp_ThirdX, Temp_ThirdY, image= constant.GREEN[1], anchor=NW)
+		SECOND 		= canvas.create_image(Temp_SecondX, Temp_SecondY, image=constant.CHROME[2], anchor=NW)
+		FIRST  		= canvas.create_image(Temp_FirstX, Temp_FirstY, image=constant.CHROME[5], anchor=NW)
+		MARK   		= canvas.create_image(Temp_MarkX, Temp_MarkY, image=TEMPER_MARK, anchor=NW)
 
-		GREET 		= canvas.create_image(GreetX, GreetY, image=HELLO)
+		GREET 		= canvas.create_image(GreetX, GreetY, image=HELLO, anchor=NW)
 
-		NAMEFIELD	= canvas.create_image(BarX * 2 + 30, BarY + 60, image=NAME_FIELD)
-		SENTENCE	= canvas.create_image(SentanceX, SentanceY, image=POPUP01)
-		NOBATTERY	= canvas.create_image(NoBatteryX, NoBatteryY, image=NO_BATTERY)
+		NAMEFIELD	= canvas.create_image(BarX * 2 + 30, BarY + 60, image=NAME_FIELD, anchor=NW)
+		SENTENCE	= canvas.create_image(SentanceX, SentanceY, image=POPUP01, anchor=NW)
+		NOBATTERY	= canvas.create_image(NoBatteryX, NoBatteryY, image=NO_BATTERY, anchor=NW)
 		NAME		= canvas.create_text(NameX, NameY, fill="white", font=("Noto Sans Korean", 90),
-						text="Zenny")
-		SLOT		= canvas.create_text(SlotX, SlotY, fill="white", font=("Noto Sans Korean", 60), text="#1")
+						text="Zenny", anchor=NW)
+		SLOT		= canvas.create_text(SlotX, SlotY, fill="white", font=("Noto Sans Korean", 60), text="#1", anchor=NW)
 
 	## background change..Noto Sans Korean Light  Abcdefghxxklm
 	canvas.itemconfig(BACKGROUND, image=Weather[index])
@@ -293,7 +293,6 @@ def battery(index):
 	global constant, TIME
 
 	try:
-		#init.>>>>;
 		name = DICT_ARR[index][b"01"]
 		value =int(DICT_ARR[index][b"05"])
 
