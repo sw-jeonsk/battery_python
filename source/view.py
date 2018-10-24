@@ -211,7 +211,7 @@ def waitView():
 
 		GREET 		= canvas.create_image(GreetX, GreetY, image=HELLO, anchor=NW)
 
-		NAMEFIELD	= canvas.create_image(BarX * 2 + 30, BarY + 60, image=NAME_FIELD, anchor=NW)
+		NAMEFIELD	= canvas.create_image(BarX, BarY, image=NAME_FIELD, anchor=NW)
 		SENTENCE	= canvas.create_image(SentanceX, SentanceY, image=POPUP01, anchor=NW)
 		NOBATTERY	= canvas.create_image(NoBatteryX, NoBatteryY, image=NO_BATTERY, anchor=NW)
 		NAME		= canvas.create_text(NameX, NameY, fill="white", font=("Noto Sans Korean", 90),
@@ -779,10 +779,6 @@ def battery_test(value):
 			canvas.itemconfig(SECOND, state="normal")
 			canvas.itemconfig(MARK, state='normal')
 
-			#hidden
-			canvas.itemconfig(FIRST, state='hidden')
-			
-
 		else:
 			## NORMAL...
 			canvas.itemconfig(NAMEFIELD, state="normal")
@@ -797,6 +793,7 @@ def battery_test(value):
 		## CHANGE...
 		if value == 0:
 			canvas.itemconfig(SECOND, image=constant.RED[value])
+			canvas.itemconfig(FIRST, image=constant.RED[value])
 
 		elif value < 30:
 			canvas.itemconfig(SECOND, image=constant.RED[second_value])
