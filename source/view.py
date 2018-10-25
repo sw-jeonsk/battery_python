@@ -37,23 +37,15 @@ HOMEDIR 	= "/home/pi/Desktop/github/battery_python/source/"
 Width 		= 1024
 Height		= 768
 
-IntervalX	= 50	
-IntervalY	= 250
-NumWidth	= 160
-NumHeight	= 204
-TMarkSize	= 83
 
-Temp_ThirdX			=	385 +  NumWidth/2
-Temp_ThirdY			=	525 + NumHeight/2
+Temp_SecondX	 	=	550
+Temp_SecondY		=	500
 
-Temp_SecondX	 	=	585 + NumWidth/2
-Temp_SecondY		=	525 + NumHeight/2
+Temp_FirstX	 	=	700
+Temp_FirstY	 	=	500
 
-Temp_FirstX	 	=	744 + NumWidth/2
-Temp_FirstY	 	=	525 + NumHeight/2
-
-Temp_MarkX		=	884 + TMarkSize/2
-Temp_MarkY		=	525 + TMarkSize/2
+Temp_MarkX		=	850
+Temp_MarkY		=	480
 
 
 Bat_ThirdX	 	=	400
@@ -107,6 +99,7 @@ SLOT		= None
 UART		= None
 BAUDRATE	= 38400
 
+VALUE = 0
 TIME = 0
 NEXT_VIEW = 5 #seconds
 UART_TIME = 1 
@@ -186,10 +179,14 @@ NAME_FIELD   = PhotoImage(file=HOMEDIR + "image/name_field.png")
 BED_BATTERY = PhotoImage(file=HOMEDIR + "image/bed_battery.png")
 
 
-DICT_NFC0 = {b"01": None, b"02" : None, b"03" : None, b"04" : None, b"05": None, b"06": None, "view" : 0, "ch_gpio" : VIN1_EN, "qc_gpio": QC_CH_EN1,"qc_enable" : 0,  "led_gpio" : CHARGE_EN1,"sol_gpio" : SOL_OFF_EN1, "door_gpio":DOOR_EN1,  "count" : 0, "discon_count" : 0}
-DICT_NFC1 = {b"01": None, b"02" : None, b"03" : None, b"04" : None, b"05": None, b"06": None, "view" : 0, "ch_gpio" : VIN2_EN, "qc_gpio": QC_CH_EN1,"qc_enable" : 0,  "led_gpio" : CHARGE_EN2,"sol_gpio" : SOL_OFF_EN2,"door_gpio" :DOOR_EN2,"count" : 0, "discon_count" : 0}
-DICT_NFC2 = {b"01": None, b"02" : None, b"03" : None, b"04" : None, b"05": None, b"06": None, "view" : 0, "ch_gpio" : VIN3_EN, "qc_gpio": QC_CH_EN2,"qc_enable" : 0,  "led_gpio" : CHARGE_EN3,"sol_gpio" : SOL_OFF_EN3,"door_gpio":DOOR_EN3, "count" : 0, "discon_count" : 0}
-DICT_NFC3 = {b"01": None, b"02" : None, b"03" : None, b"04" : None, b"05": None, b"06": None, "view" : 0, "ch_gpio" : VIN4_EN, "qc_gpio": QC_CH_EN2,"qc_enable" : 0, "led_gpio" : CHARGE_EN4, "sol_gpio" : SOL_OFF_EN4,"door_gpio":DOOR_EN4, "count" : 0, "discon_count" : 0}
+DICT_NFC0 = {b"01": None, b"02" : None, b"03" : None, b"04" : None, b"05": None, b"06": None, b"07": None, b"08": None, b"09": None, b"10": None, b"11": None, b"12": None, b"15": None,
+			 "view" : 0, "ch_gpio" : VIN1_EN, "qc_gpio": QC_CH_EN1,"qc_enable" : 0,  "led_gpio" : CHARGE_EN1,"sol_gpio" : SOL_OFF_EN1, "door_gpio":DOOR_EN1,  "count" : 0, "discon_count" : 0}
+DICT_NFC1 = {b"01": None, b"02" : None, b"03" : None, b"04" : None, b"05": None, b"06": None, b"07": None, b"08": None, b"09": None, b"10": None, b"11": None, b"12": None, b"15": None,
+			 "view" : 0, "ch_gpio" : VIN2_EN, "qc_gpio": QC_CH_EN1,"qc_enable" : 0,  "led_gpio" : CHARGE_EN2,"sol_gpio" : SOL_OFF_EN2,"door_gpio" :DOOR_EN2,"count" : 0, "discon_count" : 0}
+DICT_NFC2 = {b"01": None, b"02" : None, b"03" : None, b"04" : None, b"05": None, b"06": None, b"07": None, b"08": None, b"09": None, b"10": None, b"11": None, b"12": None, b"15": None,
+			 "view" : 0, "ch_gpio" : VIN3_EN, "qc_gpio": QC_CH_EN2,"qc_enable" : 0,  "led_gpio" : CHARGE_EN3,"sol_gpio" : SOL_OFF_EN3,"door_gpio":DOOR_EN3, "count" : 0, "discon_count" : 0}
+DICT_NFC3 = {b"01": None, b"02" : None, b"03" : None, b"04" : None, b"05": None, b"06": None, b"07": None, b"08": None, b"09": None, b"10": None, b"11": None, b"12": None, b"15": None,
+			 "view" : 0, "ch_gpio" : VIN4_EN, "qc_gpio": QC_CH_EN2,"qc_enable" : 0, "led_gpio" : CHARGE_EN4, "sol_gpio" : SOL_OFF_EN4,"door_gpio":DOOR_EN4, "count" : 0, "discon_count" : 0}
 
 DICT_ARR = [DICT_NFC0, DICT_NFC1, DICT_NFC2, DICT_NFC3]
 
@@ -202,50 +199,12 @@ def waitView():
 
 	Weather = [BLUR, CLOUD, CLOUDSUN, RAIN, SUN]
 
-	if BACKGROUND == None:
-		BACKGROUND 	= canvas.create_image( 1, 0, image=Weather[index], anchor=NW)
-		THIRD		= canvas.create_image(Temp_ThirdX, Temp_ThirdY, image= constant.GREEN[1], anchor=NW)
-		SECOND 		= canvas.create_image(Temp_SecondX, Temp_SecondY, image=constant.CHROME[2], anchor=NW)
-		FIRST  		= canvas.create_image(Temp_FirstX, Temp_FirstY, image=constant.CHROME[5], anchor=NW)
-		MARK   		= canvas.create_image(Temp_MarkX, Temp_MarkY, image=TEMPER_MARK, anchor=NW)
+	canvas.delete("all")
+	canvas.create_image( 1, 0, image=Weather[index], anchor=NW)
+	canvas.create_image(Temp_SecondX, Temp_SecondY, image=constant.CHROME[2], anchor=NW)
+	canvas.create_image(Temp_FirstX, Temp_FirstY, image=constant.CHROME[5], anchor=NW)
+	canvas.create_image(Temp_MarkX, Temp_MarkY, image=TEMPER_MARK, anchor=NW)
 
-		GREET 		= canvas.create_image(GreetX, GreetY, image=HELLO, anchor=NW)
-
-		NAMEFIELD	= canvas.create_image(BarX, BarY, image=NAME_FIELD, anchor=NW)
-		SENTENCE	= canvas.create_image(SentanceX, SentanceY, image=POPUP01, anchor=NW)
-		NOBATTERY	= canvas.create_image(NoBatteryX, NoBatteryY, image=NO_BATTERY, anchor=NW)
-		NAME		= canvas.create_text(NameX, NameY, fill="white", font=("Noto Sans Korean", 90),
-						text="Zenny", anchor=NW)
-		SLOT		= canvas.create_text(SlotX, SlotY, fill="white", font=("Noto Sans Korean", 60), text="#1", anchor=NW)
-
-	## background change..Noto Sans Korean Light  Abcdefghxxklm
-	canvas.itemconfig(BACKGROUND, image=Weather[index])
-
-	## change..
-	canvas.itemconfig(SECOND, image=constant.CHROME[2])
-	canvas.itemconfig(FIRST, image=constant.CHROME[5])
-	canvas.itemconfig(MARK, image=TEMPER_MARK)
-
-	## normal..
-	canvas.itemconfig(SECOND, state="normal")
-	canvas.itemconfig(FIRST, state="normal")
-	canvas.itemconfig(MARK, state="normal")
-
-	## LOCATION CHANGE...
-	canvas.coords(FIRST ,Temp_FirstX, Temp_FirstY)
-	canvas.coords(SECOND, Temp_SecondX, Temp_SecondY)
-	canvas.coords(MARK, Temp_MarkX, Temp_MarkY)
-
-	## HIDDEN..
-	canvas.itemconfig(NAME, state='hidden')
-	canvas.itemconfig(THIRD, state='hidden')
-	canvas.itemconfig(NAMEFIELD, state="hidden")
-	canvas.itemconfig(GREET, state='hidden')
-	canvas.itemconfig(SENTENCE, state='hidden')
-	canvas.itemconfig(NOBATTERY, state='hidden')
-	canvas.itemconfig(SLOT, state='hidden')
-
-	
 
 def badView():
 
@@ -253,22 +212,13 @@ def badView():
 
 
 	## background change..
-	canvas.itemconfig(BACKGROUND, image=BED_BATTERY)
+	canvas.delete("all")
 
-	## NORMAL..
-	canvas.itemconfig(NOBATTERY, state='normal')
+	canvas.create_image(1, 0, image=BED_BATTERY, anchor=NW)
+	canvas.create_image(NoBatteryX, NoBatteryY, image=NOBATTERY, anchor=NW)
 
 	## HIDDEN..
-	canvas.itemconfig(THIRD, state='hidden')
-	canvas.itemconfig(SECOND, state="hidden")
-	canvas.itemconfig(FIRST, state='hidden')
 
-	canvas.itemconfig(MARK, state='hidden')
-	canvas.itemconfig(NAMEFIELD, state="hidden")
-	canvas.itemconfig(GREET, state='hidden')
-	canvas.itemconfig(SENTENCE, state='hidden')
-	canvas.itemconfig(NAME, state='hidden')
-	canvas.itemconfig(SLOT, state='hidden')
 
 
 
@@ -293,8 +243,12 @@ def battery(index):
 	global constant, TIME
 
 	try:
-		name = DICT_ARR[index][b"01"]
-		value =int(DICT_ARR[index][b"05"])
+		if True:
+			name = "Jordan"
+			value = index
+		else:
+			name = DICT_ARR[index][b"01"]
+			value =int(DICT_ARR[index][b"05"])
 
 		logging.info("#########################################")
 		logging.info("[INDEX] " + str(index))
@@ -302,72 +256,49 @@ def battery(index):
 		logging.info("[VALUE] " +str(value))
 
 		TIME = 0
+		canvas.delete("all")
 
 		if value != 0:
 			bat_bg_index = int(value/10)
 			first_value =	value%10
 			second_value =  int(value/10)
 
+			canvas.create_image(1, 0, image=constant.BATTERY[bat_bg_index], anchor=NW)
 
-			canvas.itemconfig(BACKGROUND, image=constant.BATTERY[bat_bg_index])
+		if value > 0  and value < 100:
 
-		## HIDDEN...
-		canvas.itemconfig(NOBATTERY, state='hidden')
-		canvas.itemconfig(SENTENCE, state='hidden')
-
-		if value >= 99:
-			canvas.itemconfig(BACKGROUND, image=constant.BATTERY[10])
-			canvas.itemconfig(SENTENCE, state='normal')
-			canvas.itemconfig(SENTENCE, image=POPUP01)
-			canvas.itemconfig(MARK, state='normal')
+			if value > 0  and value < 30:
+				canvas.create_image(Bat_SecondX, Bat_SecondY, image=constant.RED[second_value], anchor=NW)
+				canvas.create_image(Bat_FirstX, Bat_FirstY, image=constant.RED[first_value], anchor=NW)
 
 
-		if value == 100:
-			canvas.itemconfig(BACKGROUND, image=constant.BATTERY[10])
-			canvas.itemconfig(THIRD, state='normal')
-			canvas.itemconfig(SECOND, image=constant.GREEN[0])
-			canvas.itemconfig(FIRST, image=constant.GREEN[0])
-			canvas.itemconfig(SENTENCE, state='normal')
-			canvas.itemconfig(SENTENCE, image=POPUP01)
-			canvas.itemconfig(MARK, state='normal')
+			elif value >= 30 and value < 80:
+				canvas.create_image(Bat_SecondX, Bat_SecondY, image=constant.ORANGE[second_value], anchor=NW)
+				canvas.create_image(Bat_FirstX, Bat_FirstY, image=constant.ORANGE[first_value], anchor=NW)
 
-		elif value == 0:
-			pass
 
-		else:
-			## NORMAL...
-			canvas.itemconfig(NAMEFIELD, state="normal")
-			canvas.itemconfig(GREET, state='normal')
-			canvas.itemconfig(SECOND, state="normal")
-			canvas.itemconfig(FIRST, state='normal')
-			canvas.itemconfig(MARK, state='normal')
-			canvas.itemconfig(NAME, state='normal')
-			canvas.itemconfig(SLOT, state='normal')
+			elif value >=80 and value < 100:
+				canvas.create_image(Bat_SecondX, Bat_SecondY, image=constant.GREEN[second_value], anchor=NW)
+				canvas.create_image(Bat_FirstX, Bat_FirstY, image=constant.GREEN[first_value], anchor=NW)
 
-			canvas.itemconfig(SLOT, text="#" + str(index + 1))
-			canvas.itemconfig(NAME, text=name)
 
-		## CHANGE...
-		if value < 30:
-			canvas.itemconfig(SECOND, image=constant.RED[second_value])
-			canvas.itemconfig(FIRST, image=constant.RED[first_value])
+		elif value is 0:
+			canvas.create_image(Bat_SecondX, Bat_SecondY, image=constant.RED[0], anchor=NW)
+			canvas.create_image(Bat_FirstX, Bat_FirstY, image=constant.RED[0], anchor=NW)
 
-		elif value < 80:
-			canvas.itemconfig(SECOND, image=constant.ORANGE[second_value])
-			canvas.itemconfig(FIRST, image=constant.ORANGE[first_value])
-		elif value < 100:
-			canvas.itemconfig(SECOND, image=constant.GREEN[second_value])
-			canvas.itemconfig(FIRST, image=constant.GREEN[first_value])
+		elif value is 100:
+			canvas.create_image(Bat_ThirdX, Bat_ThirdY, image=constant.GREEN[1], anchor=NW)
+			canvas.create_image(Bat_SecondX, Bat_SecondY, image=constant.GREEN[0], anchor=NW)
+			canvas.create_image(Bat_FirstX, Bat_FirstY, image=constant.GREEN[0], anchor=NW)
+			canvas.create_image(SentanceX, SentanceY, image=POPUP01, anchor=NW)
 
-		canvas.itemconfig(MARK, image=PERCENT_MARK)
+		#COMMON
+		canvas.create_image(GreetX, GreetY, image=HELLO, anchor=NW)
+		canvas.create_image(Bat_MarkX, Bat_MarkY, image=PERCENT_MARK, anchor=NW)
+		canvas.create_text(NameX, NameY, fill="white", font=("Noto Sans Korean", 80), anchor=NW, text=name)
 
-		## LOCATION CHANGE...
-		canvas.coords(FIRST ,Bat_FirstX, Bat_FirstY)
-		canvas.coords(SECOND, Bat_SecondX, Bat_SecondY)
-		canvas.coords(THIRD, Bat_ThirdX, Bat_ThirdY)
-		canvas.coords(MARK, Bat_MarkX, Bat_MarkY)
 
-		## Thread Start..
+	## Thread Start..
 	except ValueError:
 		logging.error("FUNC[battery] Value Error...")
 		parameter = str(index) + ", " + str(name) + "," + str(value)
@@ -381,14 +312,21 @@ def battery(index):
 
 
 def hello_after():
-	global TIME
+	global TIME, VALUE
 
 	TIME += 1
 
-	if TIME > NEXT_VIEW:
-		waitView()
-		TIME = 0
-	root.after(1000, hello_after)
+	# if TIME > NEXT_VIEW:
+	# 	waitView()
+	# 	TIME = 0
+
+
+	if VALUE >= 100:
+		VALUE = 0
+	else:
+		battery(VALUE)
+
+	root.after(1500, hello_after)
 
 
 def uart_server():
@@ -510,6 +448,7 @@ def charge_server():
 			value = DICT_ARR[index][b"05"]
 			count = DICT_ARR[index]["count"]
 			discon_count = DICT_ARR[index]["discon_count"]
+			manufacture = DICT_ARR[index][b"15"]
 
 			lock.release()
 			
@@ -518,7 +457,7 @@ def charge_server():
 				logging.info("door open")
 				GPIO.output(door, True)
 
-			if name!= None and  GPIO.input(sol) == False:	
+			if manufacture != None and GPIO.input(sol) == False:
 
 				GPIO.output(ch, True)
 				logging.info("#"+str(index) + " charging...")
@@ -617,21 +556,21 @@ def init():
 	root.attributes("-fullscreen", True)
 	root.bind("<Escape>", quit)    
 	root.bind("x", quit)
-	root.bind("b", battery_test)
 	frame.pack()
+
 	#########################THREAD#########################
-	UART_Thread = threading.Thread(target=uart_server)
-	UART_Thread.start()
-
-
-	VIEW_Thread = threading.Thread(target=view_server)
-	VIEW_Thread.start()
-
-	LED_Thread = threading.Thread(target=led_server)
-	LED_Thread.start()
-
-	CHARGE_Thread = threading.Thread(target=charge_server)
-	CHARGE_Thread.start()
+	# UART_Thread = threading.Thread(target=uart_server)
+	# UART_Thread.start()
+	#
+	#
+	# VIEW_Thread = threading.Thread(target=view_server)
+	# VIEW_Thread.start()
+	#
+	# LED_Thread = threading.Thread(target=led_server)
+	# LED_Thread.start()
+	#
+	# CHARGE_Thread = threading.Thread(target=charge_server)
+	# CHARGE_Thread.start()
 
 	#SOL_Thread = threading.Thread(target=sol_server)
 	#SOL_Thread.start()
@@ -720,7 +659,15 @@ def dict_init(index):
 	DICT_ARR[index][b"03"] = None 
 	DICT_ARR[index][b"04"] = None 
 	DICT_ARR[index][b"05"] = None 
-	DICT_ARR[index][b"06"] = None 
+	DICT_ARR[index][b"06"] = None
+	DICT_ARR[index][b"07"] = None
+	DICT_ARR[index][b"08"] = None
+	DICT_ARR[index][b"09"] = None
+	DICT_ARR[index][b"10"] = None
+	DICT_ARR[index][b"11"] = None
+	DICT_ARR[index][b"12"] = None
+	DICT_ARR[index][b"15"] = None
+
 	DICT_ARR[index]["view"] = 0  # 0 : default / 1 : view flag / -1 : wait
 	DICT_ARR[index]["count"] = 0
 	if DICT_ARR[index]["discon_count"] > 100:
@@ -730,102 +677,7 @@ def dict_init(index):
 
 
 
-def battery_test(value):
-
-	global constant, TIME
-
-	try:
-		name = "Jordan" 
-
-		logging.info("#########################################")
-
-		TIME = 0
-		if value != 0:
-			bat_bg_index = int(value/10)
-			first_value =	value%10
-			second_value =  int(value/10)
-
-			canvas.itemconfig(BACKGROUND, image=constant.BATTERY[bat_bg_index])
-
-		else:
-			canvas.itemconfig(BACKGROUND, image=constant.BATTERY[0])
-
-		## HIDDEN...
-		canvas.itemconfig(NOBATTERY, state='hidden')
-		canvas.itemconfig(SENTENCE, state='hidden')
-
-		if value >= 99:
-			canvas.itemconfig(BACKGROUND, image=constant.BATTERY[10])
-			canvas.itemconfig(SENTENCE, state='normal')
-			canvas.itemconfig(SENTENCE, image=POPUP01)
-			canvas.itemconfig(MARK, state='normal')
-
-
-		if value == 100:
-
-			canvas.itemconfig(BACKGROUND, image=constant.BATTERY[10])
-			canvas.itemconfig(THIRD, state='normal')
-			canvas.itemconfig(SECOND, image=constant.GREEN[0])
-			canvas.itemconfig(FIRST, image=constant.GREEN[0])
-			canvas.itemconfig(SENTENCE, state='normal')
-			canvas.itemconfig(SENTENCE, image=POPUP01)
-			canvas.itemconfig(MARK, state='normal')
-
-		elif value == 0:
-
-			#normal
-			canvas.itemconfig(NAMEFIELD, state="normal")
-			canvas.itemconfig(GREET, state='normal')
-			canvas.itemconfig(SECOND, state="normal")
-			canvas.itemconfig(MARK, state='normal')
-
-		else:
-			## NORMAL...
-			canvas.itemconfig(NAMEFIELD, state="normal")
-			canvas.itemconfig(GREET, state='normal')
-			canvas.itemconfig(SECOND, state="normal")
-			canvas.itemconfig(FIRST, state='normal')
-			canvas.itemconfig(MARK, state='normal')
-			canvas.itemconfig(NAME, state='normal')
-			canvas.itemconfig(SLOT, state='normal')
-
-
-		## CHANGE...
-		if value == 0:
-			canvas.itemconfig(SECOND, image=constant.RED[value])
-			canvas.itemconfig(FIRST, image=constant.RED[value])
-
-		elif value < 30:
-			canvas.itemconfig(SECOND, image=constant.RED[second_value])
-			canvas.itemconfig(FIRST, image=constant.RED[first_value])
-
-		elif value < 80:
-			canvas.itemconfig(SECOND, image=constant.ORANGE[second_value])
-			canvas.itemconfig(FIRST, image=constant.ORANGE[first_value])
-		elif value < 100:
-			canvas.itemconfig(SECOND, image=constant.GREEN[second_value])
-			canvas.itemconfig(FIRST, image=constant.GREEN[first_value])
-		
-		#COMMON...
-		canvas.itemconfig(MARK, image=PERCENT_MARK)
-		canvas.itemconfig(SLOT, text="#" + str(1))
-		canvas.itemconfig(NAME, text=name)
-
-		## LOCATION CHANGE...
-		canvas.coords(FIRST ,Bat_FirstX, Bat_FirstY)
-		canvas.coords(SECOND, Bat_SecondX, Bat_SecondY)
-		canvas.coords(THIRD, Bat_ThirdX, Bat_ThirdY)
-		canvas.coords(MARK, Bat_MarkX, Bat_MarkY)
-
-		## Thread Start..
-	except ValueError:
-		logging.error("FUNC[battery] Value Error...")
-		parameter = str(index) + ", " + str(name) + "," + str(value)
-		logging.error(parameter)
-	except TypeError:
-		logging.error("FUNC[battery] Type Error...")
-		parameter = str(index) + ", " + str(name) + "," + str(value)
+d
 
 waitView()
-battery_test(0)
 init()
