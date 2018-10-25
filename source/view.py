@@ -72,8 +72,8 @@ NameY		= 250
 SentanceX 	= -100 #안전운전하세요.
 SentanceY	= 650 
 
-NoBatteryX  = 468
-NoBatteryY  = 431
+NoBatteryX  = 350
+NoBatteryY  = 350
 
 SlotX		= 50 
 SlotY		= 40 
@@ -208,16 +208,13 @@ def waitView():
 
 def badView():
 
-	global BACKGROUND, NAMEFIELD, GREET, FIRST, SECOND, MARK, SENTENCE
 
 
 	## background change..
 	canvas.delete("all")
 
 	canvas.create_image(1, 0, image=BED_BATTERY, anchor=NW)
-	canvas.create_image(NoBatteryX, NoBatteryY, image=NOBATTERY, anchor=NW)
-
-	## HIDDEN..
+	canvas.create_image(NoBatteryX, NoBatteryY, image=NO_BATTERY, anchor=NW)
 
 
 
@@ -321,12 +318,9 @@ def hello_after():
 
 	TIME += 1
 
-	# if TIME > NEXT_VIEW:
-	# 	waitView()
-	# 	TIME = 0
 
 
-	battery(100)
+	battery(0)
 
 	root.after(1500, hello_after)
 
