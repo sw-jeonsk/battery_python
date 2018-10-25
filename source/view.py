@@ -69,10 +69,10 @@ GreetY		= 150
 NameX		= 500
 NameY		= 250
 
-SentanceX 	= Width/2 #안전운전하세요.
-SentanceY	= 613 
+SentanceX 	= -100 #안전운전하세요.
+SentanceY	= 650 
 
-NoBatteryX  = 468 + 468/2 + 100
+NoBatteryX  = 468
 NoBatteryY  = 431
 
 SlotX		= 50 
@@ -232,10 +232,13 @@ def hello_thread():
 
 def quit(*args):
 	global root, run
-	root.destroy()
-	run = False
-	UART_Thread.join()
-	GPIO.cleanup()
+	try:
+		root.destroy()
+		run = False
+		UART_Thread.join()
+		GPIO.cleanup()
+	finally:
+		GPIO.cleanup()
 
 	
 def battery(index):
@@ -283,6 +286,7 @@ def battery(index):
 
 
 		elif value is 0:
+			canvas.create_image(1, 0, image=constant.BATTERY[0], anchor=NW)
 			canvas.create_image(Bat_SecondX, Bat_SecondY, image=constant.RED[0], anchor=NW)
 			canvas.create_image(Bat_FirstX, Bat_FirstY, image=constant.RED[0], anchor=NW)
 
@@ -293,6 +297,7 @@ def battery(index):
 			canvas.create_image(SentanceX, SentanceY, image=POPUP01, anchor=NW)
 
 		#COMMON
+		canvas.create_image(BarX, BarY, image=NAME_FIELD, anchor=NW)
 		canvas.create_image(GreetX, GreetY, image=HELLO, anchor=NW)
 		canvas.create_image(Bat_MarkX, Bat_MarkY, image=PERCENT_MARK, anchor=NW)
 		canvas.create_text(NameX, NameY, fill="white", font=("Noto Sans Korean", 80), anchor=NW, text=name)
@@ -321,10 +326,7 @@ def hello_after():
 	# 	TIME = 0
 
 
-	if VALUE >= 100:
-		VALUE = 0
-	else:
-		battery(VALUE)
+	battery(100)
 
 	root.after(1500, hello_after)
 
@@ -677,7 +679,6 @@ def dict_init(index):
 
 
 
-d
 
 waitView()
 init()
