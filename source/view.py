@@ -313,16 +313,55 @@ def battery(index):
 
 
 
-def hello_after():
+def run(_slotIndex):
 	global TIME, VALUE
 
 	TIME += 1
 
+	convert(_slotIndex)
 
+	GPIO.output(S1, S1_flag)
+	GPIO.output(S2, S2_flag)
+	GPIO.output(S3, S3_flag)
+
+
+
+	if TIME > NEXT_VIEW:
+		waitView()
+
+	if _slotIndex == 1:
+		_slotIndex = 0
+	else:
+		_slotIndex = 1
+
+	try:
+		UART.write(b"#R,T,00\r\n")
+
+		readData = UART.readline()
+
+		if len(readData) != 0:
+			sector_arr = [b"01", b"02", b"03", b"04", b"05", b"06", b"07", b"08", b"09", b"10", b"11", b"12", b"15"]
+
+			for sector in sector_arr:
+				response = read2check(b"#R,T,", sector)
+				DICT_ARR[_slotIndex][sector] = response
+
+			DICT_ARR[_slotIndex]["view"] = 1
+			DICT_ARR[_slotIndex]["count"] += 1
+			DICT_ARR[_slotIndex]["discon_count"] = 0
+
+
+		else:
+			dict_init(_slotIndex)
+
+	except TypeError:
+		logging.error("FUNC[uart_server] TypeError")
+	except serial.serialutil.SerialException:
+		logging.error("FUNC[uart_server] TypeError")
 
 	battery(0)
 
-	root.after(1500, hello_after)
+	root.after(100, run(_slotIndex))
 
 
 def uart_server():
@@ -555,24 +594,24 @@ def init():
 	frame.pack()
 
 	#########################THREAD#########################
-	# UART_Thread = threading.Thread(target=uart_server)
-	# UART_Thread.start()
-	#
-	#
-	# VIEW_Thread = threading.Thread(target=view_server)
-	# VIEW_Thread.start()
-	#
-	# LED_Thread = threading.Thread(target=led_server)
-	# LED_Thread.start()
-	#
-	# CHARGE_Thread = threading.Thread(target=charge_server)
-	# CHARGE_Thread.start()
+	UART_Thread = threading.Thread(target=uart_server)
+	UART_Thread.start()
 
-	#SOL_Thread = threading.Thread(target=sol_server)
-	#SOL_Thread.start()
+
+	VIEW_Thread = threading.Thread(target=view_server)
+	VIEW_Thread.start()
+
+	LED_Thread = threading.Thread(target=led_server)
+	LED_Thread.start()
+
+	CHARGE_Thread = threading.Thread(target=charge_server)
+	CHARGE_Thread.start()
+
+	SOL_Thread = threading.Thread(target=sol_server)
+	SOL_Thread.start()
 
 	########################################################
-	root.after(100, hello_after)
+	root.after(100, run)
 	root.mainloop()
 
 # CMD : #R,T, CMD : 01/02/03:
@@ -648,6 +687,7 @@ def convert(index):
 		S1_flag = 1
 
 def dict_init(index):
+
 	global DICT_ARR, DICT_NFC1, DICT_NFC0, DICT_NFC2, DICT_NFC3, DICT_NFC4, DICT_NFC5, DICT_NFC6, DICT_NFC7
 	
 	DICT_ARR[index][b"01"] = None 
